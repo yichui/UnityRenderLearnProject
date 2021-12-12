@@ -39,7 +39,7 @@ public class TestCbBlurRefraction : MonoBehaviour
         m_Cam = Camera.current;
 
         if (m_Cam != null && _buf != null)
-            m_Cam.RemoveCommandBuffer(selectCameraEvent, _buf);
+            m_Cam.RemoveCommandBuffers(selectCameraEvent);
 
         _buf = new CommandBuffer();
         _buf.name = "Grab cb test";

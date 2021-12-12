@@ -56,8 +56,12 @@ v2f vert (appdata_t v)
 	#else
 	float scale = 1.0;
 	#endif
-	o.uvgrab.xy = (float2(o.vertex.x, o.vertex.y*scale) + o.vertex.w) * 0.5;
+
+	//将clip空间转NDC空间，透视除法将Clip Space顶点的4个分量都除以w分量
+	o.uvgrab.xy =  (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
 	o.uvgrab.zw = o.vertex.zw;
+	
+
 	o.uvbump = TRANSFORM_TEX( v.texcoord, _BumpMap );
 	o.uvmain = TRANSFORM_TEX( v.texcoord, _MainTex );
 	UNITY_TRANSFER_FOG(o,o.vertex);
@@ -75,9 +79,12 @@ half4 frag (v2f i) : SV_Target
 	// we could optimize this by just reading the x & y without reconstructing the Z
 	half2 bump = UnpackNormal(tex2D( _BumpMap, i.uvbump )).rg;
 	float2 offset = bump * _BumpAmt * _GrabBlurTexture_TexelSize.xy;
+
+	//做一个偏移，看起来有折射感
 	i.uvgrab.xy = offset * i.uvgrab.z + i.uvgrab.xy;
 	
 	half4 col = tex2Dproj (_GrabBlurTexture, UNITY_PROJ_COORD(i.uvgrab));
+	//half4 col = tex2D(_GrabBlurTexture, i.uvgrab);
 	half4 tint = tex2D(_MainTex, i.uvmain);
 	col = lerp (col, tint, _TintAmt);
 	UNITY_APPLY_FOG(i.fogCoord, col);

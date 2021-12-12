@@ -1,0 +1,8 @@
+
+1.为什么下面2行代码可以将clip空间转为NDC空间（归一化设备空间坐标）
+	o.uvgrab.xy =  (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
+	o.uvgrab.zw = o.vertex.zw;
+	正常公式：透视除法将Clip Space顶点的4个分量都除以w分量
+
+2.half4 col = tex2Dproj (_GrabBlurTexture, UNITY_PROJ_COORD(i.uvgrab));
+	取_GrabBlurTexture的uv为啥用的是tex2Dproj和UNITY_PROJ_COORD

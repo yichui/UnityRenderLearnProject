@@ -1,4 +1,4 @@
-Shader "CommonBuffersTest/EasyGreenColor"
+Shader "CommandBufferTest/EasyGreenColor"
 {
     Properties
     {

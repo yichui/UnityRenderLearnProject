@@ -1,4 +1,9 @@
 
+1.总结
+cb可以控制某个对象的渲染序列,这是cb很有用的一个地方，例子场景TestRendererAfterPostEffect里面把SelectTestCube物体
+到最前面做渲染，但是这样做有个问题，就是物体会无视深度始终在渲染序列最后才渲染，只能在需要放最前面的物体才能这样做；
+
+q:
 1.为什么下面2行代码可以将clip空间转为NDC空间（归一化设备空间坐标）
 	o.uvgrab.xy =  (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
 	o.uvgrab.zw = o.vertex.zw;

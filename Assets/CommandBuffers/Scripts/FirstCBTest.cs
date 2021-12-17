@@ -1,14 +1,14 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 
 /// <summary>
-/// ×î¼òµ¥Àı×Ó
-/// ½«Ò»¸örendererºÍmaterialÌá½»µ½Ö÷cameraµÄcommandbufferÁĞ±í½øĞĞ»æÖÆäÖÈ¾£¬
-/// ´úÂë±È½ÏºÃÀí½â£¬renderµÄÍø¸ñ¼¸ºÎÊı¾İ¼ÓÉÏmaterialµÄshaderäÖÈ¾ÃüÁî£¬¾ÍÏàµ±ÓÚÌá½»drawcallÁË¡£
-/// ÓĞµãÀàËÆOnImageRender×öÆÁÄ»ºóÆÚÌØĞ§Ò»Ñù£¬Ô­±¾standard²ÄÖÊµÄ»ÒÉ«äÖÈ¾³öÀ´ºóÓÖ¾­¹ıcommandbuffÖ¸¶¨µÄmaterial±ä³ÉÁËÂÌÉ«¡£
+/// æœ€ç®€å•ä¾‹å­
+/// å°†ä¸€ä¸ªrendererå’Œmaterialæäº¤åˆ°ä¸»cameraçš„commandbufferåˆ—è¡¨è¿›è¡Œç»˜åˆ¶æ¸²æŸ“ï¼Œ
+/// ä»£ç æ¯”è¾ƒå¥½ç†è§£ï¼Œrenderçš„ç½‘æ ¼å‡ ä½•æ•°æ®åŠ ä¸Šmaterialçš„shaderæ¸²æŸ“å‘½ä»¤ï¼Œå°±ç›¸å½“äºæäº¤drawcalläº†ã€‚
+/// æœ‰ç‚¹ç±»ä¼¼OnImageRenderåšå±å¹•åæœŸç‰¹æ•ˆä¸€æ ·ï¼ŒåŸæœ¬standardæè´¨çš„ç°è‰²æ¸²æŸ“å‡ºæ¥ååˆç»è¿‡commandbuffæŒ‡å®šçš„materialå˜æˆäº†ç»¿è‰²ã€‚
 /// </summary>
 public class FirstCBTest : MonoBehaviour
 {

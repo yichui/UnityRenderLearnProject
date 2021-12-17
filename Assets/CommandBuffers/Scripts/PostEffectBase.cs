@@ -1,10 +1,10 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PostEffectBase : MonoBehaviour
 {
-    //InspectorÃæ°åÉÏÖ±½ÓÍÏÈë
+    //Inspectoré¢æ¿ä¸Šç›´æ¥æ‹–å…¥
     public Shader shader = null;
     private Material _material = null;
     public Material _Material
@@ -17,12 +17,12 @@ public class PostEffectBase : MonoBehaviour
         }
     }
 
-    //¸ù¾İshader´´½¨ÓÃÓÚÆÁÄ»ÌØĞ§µÄ²ÄÖÊ
+    //æ ¹æ®shaderåˆ›å»ºç”¨äºå±å¹•ç‰¹æ•ˆçš„æè´¨
     protected Material GenerateMaterial(Shader shader)
     {
         if (shader == null)
             return null;
-        //ĞèÒªÅĞ¶ÏshaderÊÇ·ñÖ§³Ö
+        //éœ€è¦åˆ¤æ–­shaderæ˜¯å¦æ”¯æŒ
         if (shader.isSupported == false)
             return null;
         Material material = new Material(shader);

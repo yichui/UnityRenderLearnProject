@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -6,9 +6,9 @@ using UnityEngine.Rendering;
 
 
 /// <summary>
-/// ·ÂÕÕ¹Ù·½commandbuffµÄÀı×Ó£¬ÔÚBeforeForwardAlphaµÄäÖÈ¾Ë³ĞòÇ°»ñÈ¡µ½µ±Ç°ÆÁÄ»µÄrt,
-/// ¾­¹ıÄ£ºıĞ§¹ûºóµÃµ½Ò»ÕÅÄ£ºırt,½«Æä·Åµ½ CubeÎïÌå°ëÍ¸Ã÷shaderÖĞµÄ_GrabBlurTextureÖĞ£¬
-/// ÔÚ°ëÍ¸Ã÷äÖÈ¾Ê±Ê¹ÓÃ£¬Ê¹µÃÔÚÇ°ÃæCubeÖĞÎïÌåÖĞäÖÈ¾Ä£ºı²£Á§µÄĞ§¹û
+/// ä»¿ç…§å®˜æ–¹commandbuffçš„ä¾‹å­ï¼Œåœ¨BeforeForwardAlphaçš„æ¸²æŸ“é¡ºåºå‰è·å–åˆ°å½“å‰å±å¹•çš„rt,
+/// ç»è¿‡æ¨¡ç³Šæ•ˆæœåå¾—åˆ°ä¸€å¼ æ¨¡ç³Šrt,å°†å…¶æ”¾åˆ° Cubeç‰©ä½“åŠé€æ˜shaderä¸­çš„_GrabBlurTextureä¸­ï¼Œ
+/// åœ¨åŠé€æ˜æ¸²æŸ“æ—¶ä½¿ç”¨ï¼Œä½¿å¾—åœ¨å‰é¢Cubeä¸­ç‰©ä½“ä¸­æ¸²æŸ“æ¨¡ç³Šç»ç’ƒçš„æ•ˆæœ
 /// </summary>
 public class TestCbBlurRefraction : MonoBehaviour
 {
@@ -51,23 +51,23 @@ public class TestCbBlurRefraction : MonoBehaviour
         _buf = new CommandBuffer();
         _buf.name = "Grab cb test";
 
-        //´Óµ±Ç°ÆÁÄ»¸´ÖÆÒ»ÕÅtx
+        //ä»å½“å‰å±å¹•å¤åˆ¶ä¸€å¼ tx
         int screenCopyID = Shader.PropertyToID("_ScreenCopyTexture");
         _buf.GetTemporaryRT(screenCopyID, -1, -1, 0, FilterMode.Bilinear);
         _buf.Blit(BuiltinRenderTextureType.CameraTarget, screenCopyID);
 
-        // »ñÈ¡2ÕÅ¸üĞ¡µÄÌùÍ¼À´×öÄ£ºı
+        // è·å–2å¼ æ›´å°çš„è´´å›¾æ¥åšæ¨¡ç³Š
         int blurredID = Shader.PropertyToID("_Temp1");
         _buf.GetTemporaryRT(blurredID, -2, -2, 0, FilterMode.Bilinear);
         int blurredID2 = Shader.PropertyToID("_Temp2");
         _buf.GetTemporaryRT(blurredID2, -2, -2, 0, FilterMode.Bilinear);
 
-        // ÏÈ²ÉÑùÖ®Ç°²ÉÑùµÄÆÁÄ»rt·Åµ½blurredIDµÄrtÀï
-        //È»ºóÊÍ·ÅµôÆÁÄ»rt
+        // å…ˆé‡‡æ ·ä¹‹å‰é‡‡æ ·çš„å±å¹•rtæ”¾åˆ°blurredIDçš„rté‡Œ
+        //ç„¶åé‡Šæ”¾æ‰å±å¹•rt
         _buf.Blit(screenCopyID, blurredID);
         _buf.ReleaseTemporaryRT(screenCopyID);
 
-        //ĞŞ¸ÄSeparableBlur.shaderµÄÈ«¾Ö²ÎÊıoffsets,Ê¹Æä²úÉú¸÷¸ö·½ÏòµÄÄ£ºıĞ§¹ûÀ´µş¼ÓÔöÇ¿Ğ§¹û
+        //ä¿®æ”¹SeparableBlur.shaderçš„å…¨å±€å‚æ•°offsets,ä½¿å…¶äº§ç”Ÿå„ä¸ªæ–¹å‘çš„æ¨¡ç³Šæ•ˆæœæ¥å åŠ å¢å¼ºæ•ˆæœ
         // horizontal blur
         _buf.SetGlobalVector("offsets", new Vector4(2.0f / Screen.width, 0, 0, 0));
         _buf.Blit(blurredID, blurredID2, m_Material);
@@ -81,7 +81,7 @@ public class TestCbBlurRefraction : MonoBehaviour
         _buf.SetGlobalVector("offsets", new Vector4(0, 4.0f / Screen.height, 0, 0));
         _buf.Blit(blurredID2, blurredID, m_Material);
 
-        //µÃµ½Í¸Ã÷Ğ§¹ûÎÆÀíºó£¬½«Æä¸³Öµ¸øGlassWithoutGrab.shaderµÄ_GrabBlurTexture»ìºÏµÃµ½Ä£ºıÍ¸Ã÷
+        //å¾—åˆ°é€æ˜æ•ˆæœçº¹ç†åï¼Œå°†å…¶èµ‹å€¼ç»™GlassWithoutGrab.shaderçš„_GrabBlurTextureæ··åˆå¾—åˆ°æ¨¡ç³Šé€æ˜
         _buf.SetGlobalTexture("_GrabBlurTexture", blurredID);
 
         _buf.ReleaseTemporaryRT(blurredID2);

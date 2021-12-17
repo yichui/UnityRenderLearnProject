@@ -1,13 +1,13 @@
-
-1.×Ü½á
-cb¿ÉÒÔ¿ØÖÆÄ³¸ö¶ÔÏóµÄäÖÈ¾ÐòÁÐ,ÕâÊÇcbºÜÓÐÓÃµÄÒ»¸öµØ·½£¬Àý×Ó³¡¾°TestRendererAfterPostEffectÀïÃæ°ÑSelectTestCubeÎïÌå
-µ½×îÇ°Ãæ×öäÖÈ¾£¬µ«ÊÇÕâÑù×öÓÐ¸öÎÊÌâ£¬¾ÍÊÇÎïÌå»áÎÞÊÓÉî¶ÈÊ¼ÖÕÔÚäÖÈ¾ÐòÁÐ×îºó²ÅäÖÈ¾£¬Ö»ÄÜÔÚÐèÒª·Å×îÇ°ÃæµÄÎïÌå²ÅÄÜÕâÑù×ö£»
+ï»¿
+1.æ€»ç»“
+cbå¯ä»¥æŽ§åˆ¶æŸä¸ªå¯¹è±¡çš„æ¸²æŸ“åºåˆ—,è¿™æ˜¯cbå¾ˆæœ‰ç”¨çš„ä¸€ä¸ªåœ°æ–¹ï¼Œä¾‹å­åœºæ™¯TestRendererAfterPostEffecté‡Œé¢æŠŠSelectTestCubeç‰©ä½“
+åˆ°æœ€å‰é¢åšæ¸²æŸ“ï¼Œä½†æ˜¯è¿™æ ·åšæœ‰ä¸ªé—®é¢˜ï¼Œå°±æ˜¯ç‰©ä½“ä¼šæ— è§†æ·±åº¦å§‹ç»ˆåœ¨æ¸²æŸ“åºåˆ—æœ€åŽæ‰æ¸²æŸ“ï¼Œåªèƒ½åœ¨éœ€è¦æ”¾æœ€å‰é¢çš„ç‰©ä½“æ‰èƒ½è¿™æ ·åšï¼›
 
 q:
-1.ÎªÊ²Ã´ÏÂÃæ2ÐÐ´úÂë¿ÉÒÔ½«clip¿Õ¼ä×ªÎªNDC¿Õ¼ä£¨¹éÒ»»¯Éè±¸¿Õ¼ä×ø±ê£©
+1.ä¸ºä»€ä¹ˆä¸‹é¢2è¡Œä»£ç å¯ä»¥å°†clipç©ºé—´è½¬ä¸ºNDCç©ºé—´ï¼ˆå½’ä¸€åŒ–è®¾å¤‡ç©ºé—´åæ ‡ï¼‰
 	o.uvgrab.xy =  (float2(o.vertex.x, o.vertex.y * scale) + o.vertex.w) * 0.5;
 	o.uvgrab.zw = o.vertex.zw;
-	Õý³£¹«Ê½£ºÍ¸ÊÓ³ý·¨½«Clip Space¶¥µãµÄ4¸ö·ÖÁ¿¶¼³ýÒÔw·ÖÁ¿
+	æ­£å¸¸å…¬å¼ï¼šé€è§†é™¤æ³•å°†Clip Spaceé¡¶ç‚¹çš„4ä¸ªåˆ†é‡éƒ½é™¤ä»¥wåˆ†é‡
 
 2.half4 col = tex2Dproj (_GrabBlurTexture, UNITY_PROJ_COORD(i.uvgrab));
-	È¡_GrabBlurTextureµÄuvÎªÉ¶ÓÃµÄÊÇtex2DprojºÍUNITY_PROJ_COORD
+	å–_GrabBlurTextureçš„uvä¸ºå•¥ç”¨çš„æ˜¯tex2Dprojå’ŒUNITY_PROJ_COORD

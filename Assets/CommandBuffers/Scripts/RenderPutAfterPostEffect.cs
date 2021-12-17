@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// ½«ÎïÌå_targetRendereräÖÈ¾Ë³ĞòÍÆµ½ºó´¦ÀíºóäÖÈ¾£¬ÀàËÆ¾°ÉîµÄĞ§¹û
-/// ÕâÑù×öµÄÎÊÌâÊÇÎŞÊÓÉî¶È£¬Ö»ÄÜÔÚĞèÒª·Å×îÇ°ÃæµÄÎïÌå²ÅÄÜÕâÑù×ö
+/// å°†ç‰©ä½“_targetRendereræ¸²æŸ“é¡ºåºæ¨åˆ°åå¤„ç†åæ¸²æŸ“ï¼Œç±»ä¼¼æ™¯æ·±çš„æ•ˆæœ
+/// è¿™æ ·åšçš„é—®é¢˜æ˜¯æ— è§†æ·±åº¦ï¼Œåªèƒ½åœ¨éœ€è¦æ”¾æœ€å‰é¢çš„ç‰©ä½“æ‰èƒ½è¿™æ ·åš
 /// </summary>
 public class RenderPutAfterPostEffect : MonoBehaviour
 {
@@ -21,10 +21,10 @@ public class RenderPutAfterPostEffect : MonoBehaviour
             _commandBuffer = new CommandBuffer();
             //  Add a "draw renderer" command.
             _commandBuffer.DrawRenderer(_targetRenderer, _targetRenderer.sharedMaterial);
-            //Ö±½Ó¼ÓÈëÏà»úµÄCommandBufferÊÂ¼ş¶ÓÁĞÖĞ,ÍÆµ½ºó´¦ÀíºóÔÙÏÔÊ¾
+            //ç›´æ¥åŠ å…¥ç›¸æœºçš„CommandBufferäº‹ä»¶é˜Ÿåˆ—ä¸­,æ¨åˆ°åå¤„ç†åå†æ˜¾ç¤º
             Camera.main.AddCommandBuffer(CameraEvent.AfterImageEffects, _commandBuffer);
 
-            //ÕâÑù×öµÄÎÊÌâÊÇÎŞÊÓÉî¶È£¬Ö»ÄÜÔÚĞèÒª·Å×îÇ°ÃæµÄÎïÌå²ÅÄÜÕâÑù×ö
+            //è¿™æ ·åšçš„é—®é¢˜æ˜¯æ— è§†æ·±åº¦ï¼Œåªèƒ½åœ¨éœ€è¦æ”¾æœ€å‰é¢çš„ç‰©ä½“æ‰èƒ½è¿™æ ·åš
             _targetRenderer.enabled = false;
         }
     }
@@ -33,7 +33,7 @@ public class RenderPutAfterPostEffect : MonoBehaviour
     {
         if (_targetRenderer)
         {
-            //ÒÆ³ıÊÂ¼ş£¬ÇåÀí×ÊÔ´
+            //ç§»é™¤äº‹ä»¶ï¼Œæ¸…ç†èµ„æº
             Camera.main.RemoveCommandBuffer(CameraEvent.AfterImageEffects, _commandBuffer);
             _commandBuffer.Clear();
             _targetRenderer.enabled = true;

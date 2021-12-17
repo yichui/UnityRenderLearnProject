@@ -1,12 +1,12 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// ½«commandbuffäÖÈ¾ºóµÃµ½µÄrenderTexture£¬·ÅÈëTargetCube²ÄÖÊµÄmainTextureÖĞ£¬
-/// ÔÚTargetCubeÉÏäÖÈ¾µÃµ½»úÆ÷ÈËµÄ±ßÔµ¹âĞ§¹û
+/// å°†commandbuffæ¸²æŸ“åå¾—åˆ°çš„renderTextureï¼Œæ”¾å…¥TargetCubeæè´¨çš„mainTextureä¸­ï¼Œ
+/// åœ¨TargetCubeä¸Šæ¸²æŸ“å¾—åˆ°æœºå™¨äººçš„è¾¹ç¼˜å…‰æ•ˆæœ
 /// </summary>
 public class TestCbRimLight : PostEffectBase
 {
@@ -17,47 +17,47 @@ public class TestCbRimLight : PostEffectBase
     public Material replaceMaterial = null;
 
     [Range(0.0f, 3.0f)]
-    public float brightness = 1.0f;//ÁÁ¶È
+    public float brightness = 1.0f;//äº®åº¦
     [Range(0.0f, 3.0f)]
-    public float contrast = 1.0f;  //¶Ô±È¶È
+    public float contrast = 1.0f;  //å¯¹æ¯”åº¦
     [Range(0.0f, 3.0f)]
-    public float saturation = 1.0f;//±¥ºÍ¶È
+    public float saturation = 1.0f;//é¥±å’Œåº¦
 
     void OnEnable()
     {
         targetRenderer = targetObject.GetComponentInChildren<Renderer>();
-        //ÉêÇëRT
+        //ç”³è¯·RT
         renderTexture = RenderTexture.GetTemporary(512, 512, 16, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default, 4);
         commandBuffer = new CommandBuffer();
-        //ÉèÖÃCommand BufferäÖÈ¾Ä¿±êÎªÉêÇëµÄRT
+        //è®¾ç½®Command Bufferæ¸²æŸ“ç›®æ ‡ä¸ºç”³è¯·çš„RT
         commandBuffer.SetRenderTarget(renderTexture);
-        //³õÊ¼ÑÕÉ«ÉèÖÃÎª»ÒÉ«
+        //åˆå§‹é¢œè‰²è®¾ç½®ä¸ºç°è‰²
         commandBuffer.ClearRenderTarget(true, true, Color.gray);
-        //»æÖÆÄ¿±ê¶ÔÏó£¬Èç¹ûÃ»ÓĞÌæ»»²ÄÖÊ£¬¾ÍÓÃ×Ô¼ºµÄ²ÄÖÊ
+        //ç»˜åˆ¶ç›®æ ‡å¯¹è±¡ï¼Œå¦‚æœæ²¡æœ‰æ›¿æ¢æè´¨ï¼Œå°±ç”¨è‡ªå·±çš„æè´¨
         Material mat = replaceMaterial == null ? targetRenderer.sharedMaterial : replaceMaterial;
         commandBuffer.DrawRenderer(targetRenderer, mat);
-        //È»ºó½ÓÊÜÎïÌåµÄ²ÄÖÊÊ¹ÓÃÕâÕÅRT×÷ÎªÖ÷ÎÆÀí
+        //ç„¶åæ¥å—ç‰©ä½“çš„æè´¨ä½¿ç”¨è¿™å¼ RTä½œä¸ºä¸»çº¹ç†
         this.GetComponent<Renderer>().sharedMaterial.mainTexture = renderTexture;
         //targetRenderer.sharedMaterial.mainTexture = renderTexture;
         if (_Material)
         {
-            //ÕâÊÇ¸ö±È½ÏÎ£ÏÕµÄĞ´·¨£¬Ò»ÕÅRT¼´×÷ÎªÊäÈëÓÖ×÷ÎªÊä³ö£¬ÔÚÄ³Ğ©ÏÔ¿¨ÉÏ¿ÉÄÜ²»Ö§³Ö£¬Èç¹û²»ÏñÎÒÕâÃ´ÀÁµÄ»°...»¹ÊÇ¶îÍâÉêÇëÒ»ÕÅRT
+            //è¿™æ˜¯ä¸ªæ¯”è¾ƒå±é™©çš„å†™æ³•ï¼Œä¸€å¼ RTå³ä½œä¸ºè¾“å…¥åˆä½œä¸ºè¾“å‡ºï¼Œåœ¨æŸäº›æ˜¾å¡ä¸Šå¯èƒ½ä¸æ”¯æŒï¼Œå¦‚æœä¸åƒæˆ‘è¿™ä¹ˆæ‡’çš„è¯...è¿˜æ˜¯é¢å¤–ç”³è¯·ä¸€å¼ RT
             commandBuffer.Blit(renderTexture, renderTexture, _Material);
         }
-        //Ö±½Ó¼ÓÈëÏà»úµÄCommandBufferÊÂ¼ş¶ÓÁĞÖĞ
+        //ç›´æ¥åŠ å…¥ç›¸æœºçš„CommandBufferäº‹ä»¶é˜Ÿåˆ—ä¸­
         Camera.main.AddCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
     }
 
     void OnDisable()
     {
-        //ÒÆ³ıÊÂ¼ş£¬ÇåÀí×ÊÔ´
+        //ç§»é™¤äº‹ä»¶ï¼Œæ¸…ç†èµ„æº
         Camera.main.RemoveCommandBuffer(CameraEvent.BeforeForwardOpaque, commandBuffer);
         commandBuffer.Clear();
         //renderTexture.Release();
         RenderTexture.ReleaseTemporary(renderTexture);
     }
 
-    //Îª·½±ãµ÷Õû£¬·ÅÔÚupdateÀïÃæÁË
+    //ä¸ºæ–¹ä¾¿è°ƒæ•´ï¼Œæ”¾åœ¨updateé‡Œé¢äº†
     void Update()
     {
         _Material.SetFloat("_Brightness", brightness);
@@ -65,10 +65,10 @@ public class TestCbRimLight : PostEffectBase
         _Material.SetFloat("_Contrast", contrast);
 
     }
-    //Ò²¿ÉÒÔÔÚOnPreRenderÖĞÖ±½ÓÍ¨¹ıGraphicsÖ´ĞĞCommand Buffer£¬²»¹ıOnPreRenderºÍOnPostRenderÖ»ÔÚ¹ÒÔÚÏà»úµÄ½Å±¾ÉÏ²ÅÓĞ×÷ÓÃ£¡£¡£¡
+    //ä¹Ÿå¯ä»¥åœ¨OnPreRenderä¸­ç›´æ¥é€šè¿‡Graphicsæ‰§è¡ŒCommand Bufferï¼Œä¸è¿‡OnPreRenderå’ŒOnPostRenderåªåœ¨æŒ‚åœ¨ç›¸æœºçš„è„šæœ¬ä¸Šæ‰æœ‰ä½œç”¨ï¼ï¼ï¼
     //void OnPreRender()
     //{
-    //    //ÔÚÕıÊ½äÖÈ¾Ç°Ö´ĞĞCommand Buffer
+    //    //åœ¨æ­£å¼æ¸²æŸ“å‰æ‰§è¡ŒCommand Buffer
     //    Graphics.ExecuteCommandBuffer(commandBuffer);
 
     //}

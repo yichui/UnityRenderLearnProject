@@ -7,5 +7,5 @@ CommandBuffs的学习:
 3.伪景深
 4.rt替换目标mat的maintexture
 5.实现类grabpass的扰动效果
-![Image text](https://github.com/yichui/UnityRenderLearnProject/blob/main/Image/commandBuffTestGrabDisort.png)
+![Image text](https://imgtu.com/i/TArc3n)
 

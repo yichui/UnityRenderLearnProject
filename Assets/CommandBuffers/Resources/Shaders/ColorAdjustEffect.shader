@@ -1,8 +1,8 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+ï»¿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 Shader "CommandBufferTest/ColorAdjustEffect"
 {
-	//ÊôĞÔ¿é£¬shaderÓÃµ½µÄÊôĞÔ£¬¿ÉÒÔÖ±½ÓÔÚInspectorÃæ°åµ÷Õû
+	//å±æ€§å—ï¼Œshaderç”¨åˆ°çš„å±æ€§ï¼Œå¯ä»¥ç›´æ¥åœ¨Inspectoré¢æ¿è°ƒæ•´
 	Properties
 	{
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
@@ -11,42 +11,42 @@ Shader "CommandBufferTest/ColorAdjustEffect"
 		_Contrast("Contrast", Float) = 1
 	}
 
-	//Ã¿¸öshader¶¼ÓĞSubshaer£¬¸÷¸ösubshaerÖ®¼äÊÇÆ½ĞĞ¹ØÏµ£¬Ö»¿ÉÄÜÔËĞĞÒ»¸ösubshader£¬Ö÷ÒªÕë¶Ô²»Í¬Ó²¼ş
+	//æ¯ä¸ªshaderéƒ½æœ‰Subshaerï¼Œå„ä¸ªsubshaerä¹‹é—´æ˜¯å¹³è¡Œå…³ç³»ï¼Œåªå¯èƒ½è¿è¡Œä¸€ä¸ªsubshaderï¼Œä¸»è¦é’ˆå¯¹ä¸åŒç¡¬ä»¶
 	SubShader
 	{
-		//ÕæÕı¸É»îµÄ¾ÍÊÇPassÁË£¬Ò»¸öshaderÖĞ¿ÉÄÜÓĞ²»Í¬µÄpass£¬¿ÉÒÔÖ´ĞĞ¶à¸öpass
+		//çœŸæ­£å¹²æ´»çš„å°±æ˜¯Passäº†ï¼Œä¸€ä¸ªshaderä¸­å¯èƒ½æœ‰ä¸åŒçš„passï¼Œå¯ä»¥æ‰§è¡Œå¤šä¸ªpass
 		Pass
 		{
-			//ÉèÖÃÒ»Ğ©äÖÈ¾×´Ì¬£¬´Ë´¦ÏÈ²»ÏêÏ¸½âÊÍ
+			//è®¾ç½®ä¸€äº›æ¸²æŸ“çŠ¶æ€ï¼Œæ­¤å¤„å…ˆä¸è¯¦ç»†è§£é‡Š
 			ZTest Always Cull Off ZWrite Off
 
 			CGPROGRAM
-			//ÔÚPropertiesÖĞµÄÄÚÈİÖ»ÊÇ¸øInspectorÃæ°åÊ¹ÓÃ£¬ÕæÕıÉùÃ÷ÔÚ´Ë´¦£¬×¢ÒâÓëÉÏÃæÒ»ÖÂĞÔ
+			//åœ¨Propertiesä¸­çš„å†…å®¹åªæ˜¯ç»™Inspectoré¢æ¿ä½¿ç”¨ï¼ŒçœŸæ­£å£°æ˜åœ¨æ­¤å¤„ï¼Œæ³¨æ„ä¸ä¸Šé¢ä¸€è‡´æ€§
 			sampler2D _MainTex;
 			half _Brightness;
 			half _Saturation;
 			half _Contrast;
 
-			//vertºÍfragº¯Êı
+			//vertå’Œfragå‡½æ•°
 			#pragma vertex vert
 			#pragma fragment frag
 			#include "Lighting.cginc"
 
-			//´Óvertex shader´«Èëpixel shaderµÄ²ÎÊı
+			//ä»vertex shaderä¼ å…¥pixel shaderçš„å‚æ•°
 			struct v2f
 			{
-				float4 pos : SV_POSITION; //¶¥µãÎ»ÖÃ
-				half2  uv : TEXCOORD0;	  //UV×ø±ê
+				float4 pos : SV_POSITION; //é¡¶ç‚¹ä½ç½®
+				half2  uv : TEXCOORD0;	  //UVåæ ‡
 			};
 
 			//vertex shader
-			//appdata_img£º´øÓĞÎ»ÖÃºÍÒ»¸öÎÆÀí×ø±êµÄ¶¥µã×ÅÉ«Æ÷ÊäÈë
+			//appdata_imgï¼šå¸¦æœ‰ä½ç½®å’Œä¸€ä¸ªçº¹ç†åæ ‡çš„é¡¶ç‚¹ç€è‰²å™¨è¾“å…¥
 			v2f vert(appdata_img v)
 			{
 				v2f o;
-				//´Ó×ÔÉí¿Õ¼ä×ªÏòÍ¶Ó°¿Õ¼ä
+				//ä»è‡ªèº«ç©ºé—´è½¬å‘æŠ•å½±ç©ºé—´
 				o.pos = UnityObjectToClipPos(v.vertex);
-				//uv×ø±ê¸³Öµ¸øoutput
+				//uvåæ ‡èµ‹å€¼ç»™output
 				o.uv = v.texcoord;
 				return o;
 			}
@@ -54,25 +54,25 @@ Shader "CommandBufferTest/ColorAdjustEffect"
 			//fragment shader
 			fixed4 frag(v2f i) : SV_Target
 			{
-				//´Ó_MainTexÖĞ¸ù¾İuv×ø±ê½øĞĞ²ÉÑù
+				//ä»_MainTexä¸­æ ¹æ®uvåæ ‡è¿›è¡Œé‡‡æ ·
 				fixed4 renderTex = tex2D(_MainTex, i.uv);
-				//brigtnessÁÁ¶ÈÖ±½Ó³ËÒÔÒ»¸öÏµÊı£¬Ò²¾ÍÊÇRGBÕûÌåËõ·Å£¬µ÷ÕûÁÁ¶È
+				//brigtnessäº®åº¦ç›´æ¥ä¹˜ä»¥ä¸€ä¸ªç³»æ•°ï¼Œä¹Ÿå°±æ˜¯RGBæ•´ä½“ç¼©æ”¾ï¼Œè°ƒæ•´äº®åº¦
 				fixed3 finalColor = renderTex * _Brightness;
-				//saturation±¥ºÍ¶È£ºÊ×ÏÈ¸ù¾İ¹«Ê½¼ÆËãÍ¬µÈÁÁ¶ÈÇé¿öÏÂ±¥ºÍ¶È×îµÍµÄÖµ£º
+				//saturationé¥±å’Œåº¦ï¼šé¦–å…ˆæ ¹æ®å…¬å¼è®¡ç®—åŒç­‰äº®åº¦æƒ…å†µä¸‹é¥±å’Œåº¦æœ€ä½çš„å€¼ï¼š
 				fixed gray = 0.2125 * renderTex.r + 0.7154 * renderTex.g + 0.0721 * renderTex.b;
 				fixed3 grayColor = fixed3(gray, gray, gray);
-				//¸ù¾İSaturationÔÚ±¥ºÍ¶È×îµÍµÄÍ¼ÏñºÍÔ­Í¼Ö®¼ä²îÖµ
+				//æ ¹æ®Saturationåœ¨é¥±å’Œåº¦æœ€ä½çš„å›¾åƒå’ŒåŸå›¾ä¹‹é—´å·®å€¼
 				finalColor = lerp(grayColor, finalColor, _Saturation);
-				//contrast¶Ô±È¶È£ºÊ×ÏÈ¼ÆËã¶Ô±È¶È×îµÍµÄÖµ
+				//contrastå¯¹æ¯”åº¦ï¼šé¦–å…ˆè®¡ç®—å¯¹æ¯”åº¦æœ€ä½çš„å€¼
 				fixed3 avgColor = fixed3(0.5, 0.5, 0.5);
-				//¸ù¾İContrastÔÚ¶Ô±È¶È×îµÍµÄÍ¼ÏñºÍÔ­Í¼Ö®¼ä²îÖµ
+				//æ ¹æ®Contraståœ¨å¯¹æ¯”åº¦æœ€ä½çš„å›¾åƒå’ŒåŸå›¾ä¹‹é—´å·®å€¼
 				finalColor = lerp(avgColor, finalColor, _Contrast);
-				//·µ»Ø½á¹û£¬alphaÍ¨µÀ²»±ä
+				//è¿”å›ç»“æœï¼Œalphaé€šé“ä¸å˜
 				return fixed4(finalColor, renderTex.a);
 			}
 			ENDCG
 		}
 	}
-	//·ÀÖ¹shaderÊ§Ğ§µÄ±£ÕÏ´ëÊ©
+	//é˜²æ­¢shaderå¤±æ•ˆçš„ä¿éšœæªæ–½
 	FallBack Off
 }

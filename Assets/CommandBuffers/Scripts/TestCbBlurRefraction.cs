@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+
+
+/// <summary>
+/// 仿照官方commandbuff的例子，在BeforeForwardAlpha的渲染顺序前获取到当前屏幕的rt,
+/// 经过模糊效果后得到一张模糊rt,将其放到 Cube物体半透明shader中的_GrabBlurTexture中，
+/// 在半透明渲染时使用，使得在前面Cube中物体中渲染模糊玻璃的效果
+/// </summary>
 public class TestCbBlurRefraction : MonoBehaviour
 {
     private Camera m_Cam;

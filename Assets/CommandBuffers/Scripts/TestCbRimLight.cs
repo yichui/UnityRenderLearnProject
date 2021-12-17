@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-
+/// <summary>
+/// 将commandbuff渲染后得到的renderTexture，放入TargetCube材质的mainTexture中，
+/// 在TargetCube上渲染得到机器人的边缘光效果
+/// </summary>
 public class TestCbRimLight : PostEffectBase
 {
     private CommandBuffer commandBuffer = null;
@@ -68,5 +71,5 @@ public class TestCbRimLight : PostEffectBase
     //    //在正式渲染前执行Command Buffer
     //    Graphics.ExecuteCommandBuffer(commandBuffer);
 
-        //}
-    }
+    //}
+}

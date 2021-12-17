@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// 将物体渲染顺序推到后处理后渲染
+/// 将物体_targetRenderer渲染顺序推到后处理后渲染，类似景深的效果
+/// 这样做的问题是无视深度，只能在需要放最前面的物体才能这样做
 /// </summary>
 public class RenderPutAfterPostEffect : MonoBehaviour
 {

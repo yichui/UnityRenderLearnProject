@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class TestDepthTexture : MonoBehaviour
 {
-    public Shader _shader;
-    private Material _mat;
+    //public Shader _shader;
+    public Material _mat;
 
     void Start()
     {
-        if (_shader != null)
-            _mat = new Material(_shader);
+        //if (_mat != null)
+        //    _mat = new Material(_shader);
 
-        Camera.main.depthTextureMode |= DepthTextureMode.Depth;
+        //Camera.main.depthTextureMode |= DepthTextureMode.Depth;
+        Camera.main.depthTextureMode = DepthTextureMode.Depth;
+      
     }
 
     void OnDisable()

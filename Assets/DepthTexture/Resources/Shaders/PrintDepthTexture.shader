@@ -51,6 +51,7 @@ Shader "DepthTexture/PrintDepthTexture"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 /*o.uv = TRANSFORM_TEX(v.uv, _MainTex);*/
+                o.uv = float4(v.uv, v.uv);
                 //#if UNITY_UV_STARTS_AT_TOP //´¦ÓÚDX
                 //    if (_MainTex_TexelSize.y < 0)
                 //        o.uv = float2(v.uv.x, 1 - v.uv.y);

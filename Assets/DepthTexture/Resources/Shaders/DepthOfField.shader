@@ -39,6 +39,7 @@ Shader "DepthTexture/DepthOfField"
                 float4 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
                 float4 screenPos: TEXCOORD1;
+
             };
 
             sampler2D _MainTex;

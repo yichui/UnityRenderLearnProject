@@ -24,3 +24,4 @@
 2.URP渲染管线 - GPUInstance绘制草地：https://zhuanlan.zhihu.com/p/354633512 
 3.GPUSkinning：https://github.com/chengkehan/GPUSkinning
 4.GPGPU Computing Animation & Skinning:https://zhuanlan.zhihu.com/p/50640269
+5.GPUSkinning：	https://github.com/chengkehan/GPUSkinning

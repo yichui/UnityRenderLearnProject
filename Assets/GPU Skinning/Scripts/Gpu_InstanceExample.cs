@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class ExampleClass : MonoBehaviour
+public class Gpu_InstanceExample : MonoBehaviour
 {
     public int instanceCount = 100000;
     public Mesh instanceMesh;

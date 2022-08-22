@@ -176,22 +176,22 @@ Shader "NPR/ToonCompleteShader"
                 // half3 rimColor = rim * _RimColor.rgb * _RimColor.a;
 
                 //边缘光计算部分(屏幕空间深度边缘光)
-                float3 normalWS = i.worldNormal;
-                float3 normalVS = UnityWorldToViewPos(normalWS);
-                float3 positionVS = i.positionVS;
-                float3 samplePositionVS = float3(positionVS.xy + normalVS.xy*_OffsetMul,positionVS.z);
-                float4 samplePositionCS = UnityViewToClipPos(samplePositionVS);
-                float4 samplePositionVP = TransformClipToViewPortPos(samplePositionCS);
+                // float3 normalWS = i.worldNormal;
+                // float3 normalVS = UnityWorldToViewPos(normalWS);
+                // float3 positionVS = i.positionVS;
+                // float3 samplePositionVS = float3(positionVS.xy + normalVS.xy*_OffsetMul,positionVS.z);
+                // float4 samplePositionCS = UnityViewToClipPos(samplePositionVS);
+                // float4 samplePositionVP = TransformClipToViewPortPos(samplePositionCS);
 
-                float depth = i.pos.z /i.pos.w;
-                float linearEyeDepth = LinearEyeDepth(depth);
-                float offsetDepth = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture,samplePositionVP));
-                float linearEyeOffsetDepth = LinearEyeDepth(offsetDepth);
-                float depthDiff = linearEyeOffsetDepth - linearEyeDepth;
-                float rimIntensity = step(_Threshold,depthDiff);
-                half3 rimColor = rimIntensity * _RimColor.rgb * _RimColor.a;
+                // float depth = i.pos.z /i.pos.w;
+                // float linearEyeDepth = LinearEyeDepth(depth);
+                // float offsetDepth = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture,samplePositionVP));
+                // float linearEyeOffsetDepth = LinearEyeDepth(offsetDepth);
+                // float depthDiff = linearEyeOffsetDepth - linearEyeDepth;
+                // float rimIntensity = step(_Threshold,depthDiff);
+                // half3 rimColor = rimIntensity * _RimColor.rgb * _RimColor.a;
 
-                #if defined (_FACESHADOW_MAP) //面部阴影修正
+                #if 1//defined (_FACESHADOW_MAP) //面部阴影修正
                     float lightDataLeft = tex2D(_FaceShadowMap,i.uv);
                     float lightDataRight = tex2D(_FaceShadowMap,float2(1 - i.uv.x,i.uv.y));
                     float2 lightData = float2(lightDataRight,lightDataLeft);
@@ -213,10 +213,11 @@ Shader "NPR/ToonCompleteShader"
                     );
 
 
-                    half3 FaceColor = lerp(mainTex.rgb*rampStart.rgb*_ShadowColor.rgb,  mainTex.rgb*ramp.rgb*_SpecularColor, lightAttenuation);
+                    half3 FaceColor = lerp(mainTex.rgb*rampStart.rgb*_ShadowColor.rgb,  mainTex.rgb*ramp.rgb*_SpecularColor, 0);
                     col.rgb = FaceColor;
                 #else //非面部阴影的计算区域
-                    col.rgb = (diffuse + specular + rimColor) * _LightColor0.rgb;
+                    //col.rgb = (diffuse + specular + rimColor) * _LightColor0.rgb;
+                    col.rgb = (diffuse + specular ) * _LightColor0.rgb;
                     col.a = mainTex.a;
                 #endif
                 // half4 test = half4(0,rampTex.g,0,255);

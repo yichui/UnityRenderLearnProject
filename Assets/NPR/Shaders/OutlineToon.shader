@@ -4,7 +4,8 @@ Shader "NPR/OutlineToon"
     {
         _OutlineWidth("Outline Width", Range(0.01, 1)) = 0.24
         _OutLineColor("OutLine Color", Color) = (0.5,0.5,0.5,1)
-
+      /*  _NoiseTillOffset("NoiseTillOffset", Vector) = (0,0,1,1)
+        _NoiseAmp("NoiseAmp", float) = 0.02*/
     }
     SubShader
     {
@@ -89,6 +90,85 @@ Shader "NPR/OutlineToon"
                 return _OutLineColor;
             }
             ENDCG
+
+            //Cull Front
+            //ZWrite On
+            //ColorMask RGB
+            //Blend SrcAlpha OneMinusSrcAlpha
+
+            //CGPROGRAM
+            //#pragma vertex vert
+            //#pragma fragment frag
+
+            //#include "UnityCG.cginc"
+
+            //struct appdata {
+            //    float4 vertex : POSITION;
+            //    float3 normal : NORMAL;
+            //    float4 texCoord : TEXCOORD0;
+
+            //};
+
+            //struct v2f {
+            //    float4 pos : SV_POSITION;
+            //    float4 color : COLOR;
+            //    float4 tex : TEXCOORD0;
+            //};
+
+            //uniform half _OutlineWidth;
+            //uniform half4 _OutlineColor;
+            //uniform half4 _NoiseTillOffset;
+            //uniform half _NoiseAmp;
+
+            //float2 hash22(float2 p) {
+            //    p = float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)));
+            //    return -1.0 + 2.0 * frac(sin(p) * 43758.5453123);
+            //}
+
+            //float2 hash21(float2 p) {
+            //    float h = dot(p, float2(127.1, 311.7));
+            //    return -1.0 + 2.0 * frac(sin(h) * 43758.5453123);
+            //}
+
+            ////perlin
+            //float perlin_noise(float2 p) {
+            //    float2 pi = floor(p);
+            //    float2 pf = p - pi;
+            //    float2 w = pf * pf * (3.0 - 2.0 * pf);
+            //    return lerp(lerp(dot(hash22(pi + float2(0.0, 0.0)), pf - float2(0.0, 0.0)),
+            //        dot(hash22(pi + float2(1.0, 0.0)), pf - float2(1.0, 0.0)), w.x),
+            //        lerp(dot(hash22(pi + float2(0.0, 1.0)), pf - float2(0.0, 1.0)),
+            //            dot(hash22(pi + float2(1.0, 1.0)), pf - float2(1.0, 1.0)), w.x), w.y);
+            //}
+
+            //v2f vert(appdata v) 
+            //{
+            //    // just make a copy of incoming vertex data but scaled according to normal direction
+            //    v2f o;
+            //    o.pos = UnityObjectToClipPos(v.vertex);
+            //    float3 norm = mul((float3x3)UNITY_MATRIX_IT_MV, v.normal);
+            //    float2 extendDir = normalize(TransformViewToProjection(norm.xy));
+
+            //    float2 noiseSampleTex = v.texCoord;
+            //    noiseSampleTex = noiseSampleTex * _NoiseTillOffset.xy + _NoiseTillOffset.zw;
+            //    float nosieWidth = perlin_noise(noiseSampleTex);
+            //    nosieWidth = nosieWidth * 2 - 1;	// ndc Space (-1, 1)
+
+            //    half outlineWidth = _OutlineWidth + _OutlineWidth * nosieWidth * _NoiseAmp;
+
+            //    o.pos.xy += extendDir * (o.pos.w * outlineWidth * 0.1);
+
+            //    o.tex = v.texCoord;
+
+            //    o.color = _OutlineColor;
+            //    return o;
+            //}
+
+            //half4 frag(v2f i) :SV_TARGET{
+            //    return i.color;
+            //}
+
+            //ENDCG
         }
     }
 }

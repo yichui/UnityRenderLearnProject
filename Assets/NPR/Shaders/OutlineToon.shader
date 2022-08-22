@@ -68,7 +68,8 @@ Shader "NPR/OutlineToon"
             {
                 //v2f o;
                 //UNITY_INITIALIZE_OUTPUT(v2f, o);
-                //o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + v.normal * _OutlineWidth * 0.1 ,1));//¶¥µãÑØ×Å·¨Ïß·½ÏòÍâÀ©
+                ////é¡¶ç‚¹æ²¿ç€æ³•çº¿æ–¹å‘å¤–æ‰©
+                //o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + v.normal * _OutlineWidth * 0.1 ,1));
                 //return o;
 
                
@@ -76,9 +77,11 @@ Shader "NPR/OutlineToon"
                 UNITY_INITIALIZE_OUTPUT(v2f, o);
                 float4 pos = UnityObjectToClipPos(v.vertex);
                 float3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV, v.normal.xyz);
-                float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;//½«·¨Ïß±ä»»µ½NDC¿Õ¼ä
-                float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));//½«½ü²Ã¼ôÃæÓÒÉÏ½ÇÎ»ÖÃµÄ¶¥µã±ä»»µ½¹Û²ì¿Õ¼ä
-                float aspect = abs(nearUpperRight.y / nearUpperRight.x);//ÇóµÃÆÁÄ»¿í¸ß±È
+                //å°†æ³•çº¿å˜æ¢åˆ°NDCç©ºé—´
+                float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;
+                //å°†è¿‘è£å‰ªé¢å³ä¸Šè§’ä½ç½®çš„é¡¶ç‚¹å˜æ¢åˆ°è§‚å¯Ÿç©ºé—´
+                float4 nearUpperRight = mul(unity_CameraInvProjection, float4(1, 1, UNITY_NEAR_CLIP_VALUE, _ProjectionParams.y));
+                float aspect = abs(nearUpperRight.y / nearUpperRight.x);//æ±‚å¾—å±å¹•å®½é«˜æ¯”
                 ndcNormal.x *= aspect;
                 pos.xy += 0.01 * _OutlineWidth * ndcNormal.xy;
                 o.pos = pos;

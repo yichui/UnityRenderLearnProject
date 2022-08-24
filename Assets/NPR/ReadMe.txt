@@ -9,6 +9,11 @@ https://zhuanlan.zhihu.com/p/110025903
 https://zhuanlan.zhihu.com/p/163791090
 https://zhuanlan.zhihu.com/p/95986273
 
+https://github.com/sanagi/UnityGraphicTest/blob/dfc63cfb9c8f858472f9558452adcc9d382261fa/UnityChanSSU_URP-release-1.0.2/Assets/Shaders/URPGenToon.shader
+https://github.com/ashyukiha/GenshinCharacterShaderZhihuVer/blob/main/GenshinCharacterShaderZhihuVer.shader
+https://github.com/LeeJJason/LearnUnityShader
+https://github.com/unity3d-jp/UnityChanToonShaderVer2_Project
+
 tools：
 https://zhuanlan.zhihu.com/p/107664564
 

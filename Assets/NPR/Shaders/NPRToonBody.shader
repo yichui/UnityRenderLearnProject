@@ -8,11 +8,14 @@ Shader "NPRToon/NPRToonBody"
         //光照阴影
         _ShadowMultColor("Shadow Color暖色调",Color) = (1,1,1) //暖色调
         _DarkShadowMultColor("Shadow Color冷色调",Color) = (0.7,0.7,0.8) //冷色调
+
+        //控制的即是采样Lanbert的水平长度，同时控制了Ao的强度，也控制了Lambert的强度，而且Ao的数值比Lanbert还要小
         _RampShadowRange ("Ramp Shadow Range(Ramp效果的Width)", range(0.0, 1.0)) = 0.8
 
         _ShadowRamp ("Shadow Ramp", 2D) = "white" {}
-        _ShadowSmooth ("Shadow Smooth", range(0.0, 1.0)) = 0.05
-        _RampAOLerp("Ramp AO Smooth", range(0.0, 1.0)) = 0.5
+        _ShadowSmooth ("Shadow Smooth 阴影过度", range(0.0, 1.0)) = 0.05
+        //控制过渡效果，从而对存在的锯齿进行再一次的柔和过渡
+        _RampAOSmooth("Ramp AO Smooth ", range(0.0, 1.0)) = 0.5
         _BrightIntensity("Bright Intensity亮区强度", range(0.4, 10.0)) = 1
         _DarkIntensity ("Dark Intensity暗区强度", range(0.4, 10.0)) = 1
 
@@ -67,7 +70,7 @@ Shader "NPRToon/NPRToonBody"
             half3 _DarkShadowMultColor;
             half _ShadowSmooth;
             float _RampShadowRange;
-            half _RampAOLerp;
+            half _RampAOSmooth;
             half _BrightIntensity;
             half _DarkIntensity;
             float _LightThreshold;
@@ -128,8 +131,8 @@ Shader "NPRToon/NPRToonBody"
                 //平滑ShadowAOMask,减弱锯⻮ 
                 ShadowAOMask = 1 - smoothstep(saturate(ShadowAOMask), 0.2, 0.6); 
                 //为了将ShadowAOMask区域常暗显⽰,使用halflambert采样，由于采样至Ramp边缘会出现黑线，因此_RampShadowRange-0.003避免这种情况
-                //float rampValue = halfLambert  * (1.0 / _RampShadowRange - 0.003);
-                float rampValue = halfLambert  * lerp(0.5, 1.0, ShadowAOMask) * (1.0 / _RampShadowRange - 0.003);
+                float rampValue = halfLambert  * (1.0 / _RampShadowRange - 0.003);
+                //float rampValue = halfLambert  * lerp(0.5, 1.0, ShadowAOMask) * (1.0 / _RampShadowRange - 0.003);
               
 
                 //_Day大于0.5是白天，则采样上面，否则是夜晚，就采样下面
@@ -157,28 +160,17 @@ Shader "NPRToon/NPRToonBody"
                 //组合5个Ramp，得到最终的Ramp阴影，并根据rampValue与BaseColor结合。
                 half3 finalRamp = skinRamp + tightsRamp + metalRamp  + hardSilkRamp + softCommonRamp;
 
-                // float3 BaseMapShadowed = lerp(BaseColor.rgb * finalRamp, BaseColor.rgb, ShadowAOMask);              //分布Ramp  
-                // BaseMapShadowed = lerp(BaseColor.rgb, BaseMapShadowed, _ShadowRampLerp);     
-
-                // float3 BaseMapShadowed = lerp(BaseColor.rgb * finalRamp, BaseColor.rgb, ShadowAOMask);              //分布Ramp 
-
-                // BaseMapShadowed = lerp(BaseColor.rgb, BaseMapShadowed, _ShadowRampLerp);                            //阴影强度
-
-                // float IsBrightSide = ShadowAOMask * step(_LightThreshold, halfLambert);                             //获得亮部、暗部分布
-
-                // float3 Diffuse = lerp(lerp(BaseMapShadowed, BaseColor.rgb * finalRamp, _RampAOLerp) * _DarkIntensity ,
-                //                 _BrightIntensity * BaseMapShadowed ,                                                                //分开亮部
-                //                 IsBrightSide * _RampIntensity ) * _CharacterIntensity * LightColor.rgb;
-                //分布Ramp  
+              
+                //分布Ramp，baseMapShadowed就是亮部区域
                 float3 baseMapShadowed = lerp(baseColor.rgb * finalRamp, baseColor.rgb, ShadowAOMask);              
                 baseMapShadowed = lerp(baseColor.rgb, baseMapShadowed, _ShadowSmooth);     
                 //获得亮部、暗部分布
                 float IsBrightSide = ShadowAOMask * step(_LightThreshold, halfLambert);                            
 
-                float3 darkArea = lerp(baseMapShadowed, baseColor.rgb * finalRamp, _RampAOLerp) * _DarkIntensity ;
+                float3 darkArea = lerp(baseMapShadowed, baseColor.rgb * finalRamp, _RampAOSmooth) * _DarkIntensity ;
                 float3 brightArea = _BrightIntensity * baseMapShadowed ;
                 //分开亮部
-                float RampIntensity=0.5;
+                float RampIntensity = 0.5;
                 float3 Diffuse = lerp(darkArea, brightArea, IsBrightSide * RampIntensity) * _CharacterIntensity * lightColor.rgb;
                                 
  

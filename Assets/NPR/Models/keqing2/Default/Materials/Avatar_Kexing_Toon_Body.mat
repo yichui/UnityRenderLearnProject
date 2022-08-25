@@ -81,6 +81,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RampAOLerp: 0.8
+    - _RampAOSmooth: 1
     - _RampShadowRange: 0.657
     - _ShadowSmooth: 0.5
     - _SmoothnessTextureChannel: 0

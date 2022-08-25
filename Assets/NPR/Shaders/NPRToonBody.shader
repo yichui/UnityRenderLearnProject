@@ -132,8 +132,8 @@ Shader "NPRToon/NPRToonBody"
                 //平滑ShadowAOMask,减弱锯⻮ 
                 ShadowAOMask = 1 - smoothstep(saturate(ShadowAOMask), 0.2, 0.6); 
                 //为了将ShadowAOMask区域常暗显⽰,使用halflambert采样，由于采样至Ramp边缘会出现黑线，因此_RampShadowRange-0.003避免这种情况
-                float rampValue = halfLambert  * (1.0 / _RampShadowRange - 0.003);
-                //float rampValue = halfLambert  * lerp(0.5, 1.0, ShadowAOMask) * (1.0 / _RampShadowRange - 0.003);
+                //float rampValue = halfLambert  * (1.0 / _RampShadowRange - 0.003);
+                float rampValue = halfLambert  * lerp(0.5, 1.0, ShadowAOMask) * (1.0 / _RampShadowRange - 0.003);
               
 
                 //_Day大于0.5是白天，则采样上面，否则是夜晚，就采样下面

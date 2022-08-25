@@ -64,7 +64,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BrightIntensity: 1.18
+    - _BrightIntensity: 1.12
     - _BumpScale: 1
     - _CharacterIntensity: 1.2
     - _Cutoff: 0.5
@@ -75,15 +75,15 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LightThreshold: 0.657
+    - _LightThreshold: 0.7
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RampAOLerp: 0.8
     - _RampAOSmooth: 1
-    - _RampShadowRange: 0.657
-    - _ShadowSmooth: 0.5
+    - _RampShadowRange: 0.7
+    - _ShadowSmooth: 0.592
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

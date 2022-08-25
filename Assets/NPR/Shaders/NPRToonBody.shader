@@ -13,6 +13,7 @@ Shader "NPRToon/NPRToonBody"
         _RampShadowRange ("Ramp Shadow Range(Ramp效果的Width)", range(0.0, 1.0)) = 0.8
 
         _ShadowRamp ("Shadow Ramp", 2D) = "white" {}
+        //柔和过渡AO区域与领域
         _ShadowSmooth ("Shadow Smooth 阴影过度", range(0.0, 1.0)) = 0.05
         //控制过渡效果，从而对存在的锯齿进行再一次的柔和过渡
         _RampAOSmooth("Ramp AO Smooth ", range(0.0, 1.0)) = 0.5
@@ -159,9 +160,8 @@ Shader "NPRToon/NPRToonBody"
                 half3 metalRamp = step(abs(LayerMask - 0),       0.05) * ShadowRamp5;     
                 //组合5个Ramp，得到最终的Ramp阴影，并根据rampValue与BaseColor结合。
                 half3 finalRamp = skinRamp + tightsRamp + metalRamp  + hardSilkRamp + softCommonRamp;
-
               
-                //分布Ramp，baseMapShadowed就是亮部区域
+                //分布Ramp，baseMapShadowed就是亮部区域,以ShadowAOMask作为遮罩，用Lerp函数去柔和过渡阴影
                 float3 baseMapShadowed = lerp(baseColor.rgb * finalRamp, baseColor.rgb, ShadowAOMask);              
                 baseMapShadowed = lerp(baseColor.rgb, baseMapShadowed, _ShadowSmooth);     
                 //获得亮部、暗部分布

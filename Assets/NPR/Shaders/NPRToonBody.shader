@@ -16,14 +16,14 @@ Shader "NPRToon/NPRToonBody"
         _BrightIntensity("Bright Intensity亮区强度", range(0.4, 10.0)) = 1
         _DarkIntensity ("Dark Intensity暗区强度", range(0.4, 10.0)) = 1
 
-        [Toggle]_Day("Day白天黑夜",Range(0,1)) = 0.2 //白天黑夜
+        [Toggle]_Day("Day白天黑夜",Range(0,1)) = 0 //白天黑夜
 
         _LightThreshold("LightThreshold(阴影Width)",Range(0,1)) = 0.2 
 
         _CharacterIntensity("CharacterIntensity(角色整体亮度)",Range(0.1,10)) = 1
 
         //[KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,UV,BaseColor,BaseColor_A,Ramp,RampPlane)] _TestMode("_TestMode",Int) = 0
-        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse)] _TestMode("_TestMode",Int) = 0
+        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse)] _TestMode("TestMode测试模式",Int) = 0
     }
     SubShader
     {
@@ -116,9 +116,9 @@ Shader "NPRToon/NPRToonBody"
                 
 
                 //亮部颜色
-                half3 ShadowColor = baseColor.rgb * _ShadowMultColor.rgb;      
-                //暗部颜色                       
-                half3 DarkShadowColor = baseColor.rgb * _DarkShadowMultColor.rgb;        
+                // half3 ShadowColor = baseColor.rgb * _ShadowMultColor.rgb;      
+                // //暗部颜色                       
+                // half3 DarkShadowColor = baseColor.rgb * _DarkShadowMultColor.rgb;        
 
                 half lambert = max(0.0, NdotL);
                 half halfLambert = lambert*0.5 + 0.5;           

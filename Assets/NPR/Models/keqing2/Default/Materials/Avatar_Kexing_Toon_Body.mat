@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Kexing_Toon_Body
   m_Shader: {fileID: 4800000, guid: c757e9ac76d4ef048abf63bf49c71b4a, type: 3}
-  m_ShaderKeywords: _TESTMODE_NONE
+  m_ShaderKeywords: _DAY_ON _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -69,20 +69,20 @@ Material:
     - _CharacterIntensity: 1.2
     - _Cutoff: 0.5
     - _DarkIntensity: 0.8
-    - _Day: 0
+    - _Day: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LightThreshold: 0.676
+    - _LightThreshold: 0.657
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RampAOLerp: 0.549
-    - _RampShadowRange: 0.673
-    - _ShadowSmooth: 0.45
+    - _RampAOLerp: 0.8
+    - _RampShadowRange: 0.657
+    - _ShadowSmooth: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

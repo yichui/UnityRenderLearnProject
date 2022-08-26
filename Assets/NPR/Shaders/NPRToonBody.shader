@@ -301,37 +301,24 @@ Shader "NPRToon/NPRToonBody"
                     Specular *= baseColor;
                 }
 
-                // if (SpecularLayer > 100 && SpecularLayer < 150) 
-                // { 
-                //     StepSpecular = step(1 - _StepSpecularWidth, saturate(dot(normalDir, viewDir))) * 1 * _SpecularColor;
-                //     StepSpecular *= baseColor; 
-                //     // return fixed4(0,0,1,1);
-                //     // return fixed4(StepSpecular,1);
-                // }
-                // //裁边高光 (StepSpecular2常亮 无视明暗部分)
-                // if (SpecularLayer > 150 && SpecularLayer < 250) 
-                // { 
-                //     float StepSpecularMask = step(200, SpecularIntensityMask * 255); 
-                //     StepSpecular = step(1 - _StepSpecularWidth2, saturate(dot(normalDir, viewDir))) * 1 * _SpecularColor;
-                //     StepSpecular2 = step(1 - _StepSpecularWidth3 * 5, saturate(dot(normalDir, viewDir))) * StepSpecular;
-                //     StepSpecular = lerp(StepSpecular, 0, StepSpecularMask); 
-                //     StepSpecular2 *= baseColor; 
-                //     StepSpecular *= baseColor;
-                //     // return fixed4(1,0,0,1);
-                // }
-                // //BlinPhong高光 
-                // if (SpecularLayer >= 250) 
-                // {
-                //     Specular = pow(saturate(NdotH), 1 * _SpecularPower) * SpecularIntensityMask * _SpecularColor;
-                //     Specular = max(0, Specular); 
-                //     Specular += MetalMap; 
-                //     Specular *= baseColor; 
-                //     // return fixed4(0,1,0,1);
-                //     // return fixed4(Specular,1);
-                //     // return MetalMap;
-                // }
 
-                float3 emission = baseColor.a * _EmissionColor;
+                //边缘光
+                // float lambertD = max(0, -lambert);
+                // float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
+                // float rimDot = pow(rim, _RimPow);
+                // rimDot = _EnableLambert * lambert * rimDot + (1 - _EnableLambert) * rimDot;//开启平滑
+
+                // float rimIntensity = smoothstep(0, _RimSmooth,  rimDot);               // 平滑0 , 1
+                // half4 Rim = _EnableRim * pow(rimIntensity, 5) * _RimColor * baseColor ;//开启染色
+
+                // rimDot = pow(rim, _DarkSideRimPow);//fresnel边缘光延伸
+                // rimDot = _EnableLambert * lambertD * rimDot + (1 - _EnableLambert) * rimDot;//阴影面边缘光
+                // rimIntensity = smoothstep(0, _DarkSideRimSmooth, rimDot);                   //阴影面边缘光平滑
+                // half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
+                                
+                // half4 RimLight = Rim + RimDS;
+
+                float3 emission = baseColor.a * _EmissionColor ;//+ RimLight;
 
 
                 //高光融合

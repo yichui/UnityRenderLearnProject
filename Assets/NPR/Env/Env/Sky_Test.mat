@@ -4,8 +4,9 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: Sky_Test
   m_Shader: {fileID: 4800000, guid: 9617b29344677484ebdd162593eaa1fa, type: 3}
   m_ShaderKeywords: 
@@ -63,8 +64,9 @@ Material:
     m_Colors:
     - _CloudSpeed: {r: -0.005, g: -0.01, b: 0, a: 0}
     - _CloudSpeed2: {r: -0.02, g: -0.01, b: 0, a: 0}
-    - _FogColor: {r: 0, g: 0.9172413, b: 1, a: 0}
+    - _FogColor: {r: 0, g: 0.5503297, b: 1, a: 0}
     - _NoiseSpeed: {r: 0.15, g: -0.1, b: 0, a: 0}
     - _SkyFogOffset: {r: 0, g: 2, b: 0, a: 0}
     - _Speed: {r: 0.005, g: 0, b: 0, a: 0}
     - _Vector0: {r: 0, g: 2, b: 0, a: 0}
+  m_BuildTextureStacks: []

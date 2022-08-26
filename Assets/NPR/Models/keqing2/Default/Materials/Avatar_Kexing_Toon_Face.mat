@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Avatar_Kexing_Toon_Body
-  m_Shader: {fileID: 4800000, guid: c757e9ac76d4ef048abf63bf49c71b4a, type: 3}
+  m_Name: Avatar_Kexing_Toon_Face
+  m_Shader: {fileID: 4800000, guid: e1f65533385bae14a93a5b3569e0e6ca, type: 3}
   m_ShaderKeywords: _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,15 +40,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _LightMap:
-        m_Texture: {fileID: 2800000, guid: 166058c5f8c9ff141a7866269940f65c, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ebc38eb997e7d0445923d6d23d865d1f, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MetalMap:
-        m_Texture: {fileID: 2800000, guid: 6dc3694812b438c4abcd302bb3c8916f, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8f4eff58d4b64484895ec6c1bf593d37, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -64,53 +60,38 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ShadowRamp:
-        m_Texture: {fileID: 2800000, guid: dc39a2f7bb671964c85312e1165a5bc5, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BrightIntensity: 1.1
+    - _BrightIntensity: 1
     - _BumpScale: 1
-    - _CharacterIntensity: 1.12
+    - _CharacterIntensity: 1
     - _Cutoff: 0.5
-    - _DarkIntensity: 0.7
+    - _DarkIntensity: 1
     - _Day: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _LightThreshold: 0.6
-    - _MetalMapIntensity: 0.488
-    - _MetalMapV: 1
+    - _LightThreshold: 0.2
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OffsetFactor: 0
-    - _OffsetUnits: 0
-    - _OutlinePower: 0
     - _Parallax: 0.02
-    - _RampAOLerp: 0.8
-    - _RampAOSmooth: 1
-    - _RampShadowRange: 0.3
-    - _ShadowSmooth: 0.6
+    - _RampAOSmooth: 0.5
+    - _RampShadowRange: 0.8
+    - _ShadowSmooth: 0.05
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularPower: 8
     - _SrcBlend: 1
-    - _StepSpecularWidth: 0.61
-    - _StepSpecularWidth2: 0.03
-    - _StepSpecularWidth3: 0.93
-    - _StepSpecularWidth4: 1
     - _TestMode: 0
-    - _USE_SMOOTH_NORMAL: 0
     - _UVSec: 0
     - _ZWrite: 1
-    - _group_outline: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkShadowMultColor: {r: 0.7, g: 0.7, b: 0.8, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadowMultColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

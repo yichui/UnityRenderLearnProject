@@ -5,7 +5,8 @@ Shader "NPRToon/NPRToonHair"
         _MainTex ("Texture", 2D) = "white" {}
         _LightMap ("LightMap", 2D) = "white" {}
 
-        [HDR]_EmissionColor("Emission Color",Color)=(1,1,1,1)
+        //[HDR]_EmissionColor("Emission Color",Color)=(1,1,1,1)
+        _EmissionColor("Emission Color",Color)=(1,1,1,1)
 
         //光照阴影
         _ShadowMultColor("Shadow Color暖色调",Color) = (1,1,1) //暖色调
@@ -27,18 +28,36 @@ Shader "NPRToon/NPRToonHair"
         _MetalMapV ("_MetalMapV", Range(0,1)) = 0
         _MetalMapIntensity ("_MetalMapIntensity", Range(0,1)) = 0
 
-        _StepSpecularWidth ("_StepSpecularWidth", Range(0,10)) = 0
-        _StepSpecularWidth2 ("_StepSpecularWidth2", Range(0,10)) = 0
-        _StepSpecularWidth3 ("_StepSpecularWidth3", Range(0,10)) = 0
+         _StepSpecularWidth ("丝袜裁边⾼光Width", Range(0,10)) = 0
+        _StepSpecularWidth2 ("布料边缘高光Width", Range(0,10)) = 0
+        _StepSpecularWidth3 ("头发高光Width", Range(0,10)) = 0
         _StepSpecularWidth4 ("_StepSpecularWidth4", Range(0,10)) = 0
         _SpecularPower ("Specular Power", Range(0,10)) = 8
         _SpecularColor("Specular Color",Color)=(0.5, 0.5, 0.5)
+
+        _HairSpecularColor("HairSpecular Color",Color)=(1,1,1,1)
+        _HairSpecularRange("HairSpecular Range", Range(0,10)) = 1
+        _HairSpecularViewRange("HairSpecularView Range", Range(0,10)) = 1
+        _HairSpecularIntensity("HairSpecular Intensity", Range(0,10)) = 1
 
         [Toggle]_Day("Day白天黑夜",Range(0,1)) = 0 //白天黑夜
 
         _LightThreshold("LightThreshold(阴影Width)",Range(0,1)) = 0.2 
 
         _CharacterIntensity("CharacterIntensity(角色整体亮度)",Range(0.1,10)) = 1
+
+            //边缘光
+        [Toggle]_EnableLambert("Enable Lambert",Range(0,1)) = 1 
+        _RimPow ("Rim Pow", Range(0,10)) = 1
+        _RimSmooth("Rim Smooth", Range(0,10)) = 0
+        [Toggle]_EnableRim("Enable Rim",Range(0,1)) = 1 
+        _RimColor("Rim Color",Color) = (1,1,1,1)
+        _DarkSideRimPow("DarkSideRimPow", Range(0,10)) = 0
+        _DarkSideRimSmooth("Dark Side Rim Smooth", Range(0,10)) = 0.5
+        _DarkSideRimColor("DarkSideRimColor",Color) = (1,1,1,1)
+        [Toggle] _EnableRimDS("Enable RimDS",Range(0,1)) = 1 
+
+
 
          // 描边
         [Main(outline, _, 3)] _group_outline ("描边", float) = 1
@@ -50,7 +69,7 @@ Shader "NPRToon/NPRToonHair"
         [SubToggle(outline, __)] _USE_SMOOTH_NORMAL ("Use Smooth Normal", float) = 0
 
         //[KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,UV,BaseColor,BaseColor_A,Ramp,RampPlane)] _TestMode("_TestMode",Int) = 0
-        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse,Specular)] _TestMode("TestMode测试模式",Int) = 0
+        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse,Specular,HairSpecular,RimLight)] _TestMode("TestMode测试模式",Int) = 0
     }
 
     CGINCLUDE
@@ -106,6 +125,20 @@ Shader "NPRToon/NPRToonHair"
 
     half _Day;
 
+    float4 _HairSpecularColor;
+    float _HairSpecularRange,_HairSpecularViewRange,_HairSpecularIntensity;
+
+     //边缘光
+    float  _EnableLambert;
+    float _RimPow;
+    float _RimSmooth;
+    float _EnableRim;
+    fixed4 _RimColor;
+    float _DarkSideRimPow;
+    float _DarkSideRimSmooth;
+    fixed4 _DarkSideRimColor;
+    float _EnableRimDS;
+
      // 描边
     float _OutlinePower;
     float4 _LineColor;
@@ -128,25 +161,6 @@ Shader "NPRToon/NPRToonHair"
 
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
-            // struct a2v
-            // {
-            //     float4 vertex : POSITION;
-            //     float3 normal : NORMAL;
-            //     float2 uv : TEXCOORD0;
-            //     float4 vertexColor : Color;
-            // };
-
-            // struct v2f
-            // {
-            //     float4 pos : SV_POSITION;
-            //     float2 uv : TEXCOORD0;
-            //     float3 worldNormal : TEXCOORD1;
-            //     float3 worldPos : TEXCOORD2;
-            //     float3 positionVS : TEXCOORD3;
-            // };
-
-           
-
 
             v2f vert(a2v v)
             {
@@ -264,32 +278,34 @@ Shader "NPRToon/NPRToonHair"
                 //float StepSpecularMask = step(200, pow(SpecularIntensityMask, 1 / 2.2) * 255);     
 
                 // 裁边⾼光 (⾼光在暗部消失)
-                if (SpecularLayer > 0 && SpecularLayer < 50)//丝袜
-                {
-                    // x<=y返回1，否则返回0
-                    StepSpecular = step(1 - _StepSpecularWidth, saturate(NdotV)) * _SpecularColor;//*_StepSpecularIntensity;//可做修改* SpecularIntensityMask                  
-                    StepSpecular *= baseColor;           
-                }
-                // 裁边⾼光 (⾼光在暗部消失)
-                if (SpecularLayer > 50 && SpecularLayer < 150)//布料边缘高光               
-                {
-                    // x<=y返回1，否则返回0
-                    StepSpecular = step(1 - _StepSpecularWidth2, saturate(NdotV)) * 1 * _SpecularColor;//*_StepSpecularIntensity2 ;//* SpecularIntensityMask
-                    StepSpecular *= baseColor;           
-                }
+                // if (SpecularLayer > 0 && SpecularLayer < 50)//丝袜
+                // {
+                //     // x<=y返回1，否则返回0
+                //     StepSpecular = step(1 - _StepSpecularWidth, saturate(NdotV)) * _SpecularColor;//*_StepSpecularIntensity;//可做修改* SpecularIntensityMask                  
+                //     StepSpecular *= baseColor;           
+                // }
+                // // 裁边⾼光 (⾼光在暗部消失)
+                // if (SpecularLayer > 50 && SpecularLayer < 150)//布料边缘高光               
+                // {
+                //     // x<=y返回1，否则返回0
+                //     StepSpecular = step(1 - _StepSpecularWidth2, saturate(NdotV)) * 1 * _SpecularColor;//*_StepSpecularIntensity2 ;//* SpecularIntensityMask
+                //     StepSpecular *= baseColor;           
+                // }
 
                 //裁边⾼光 (StepSpecular2常亮 ⽆视明暗部分)
                 if (SpecularLayer > 150 && SpecularLayer < 250)//头发高光
                 {
-                    // StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _StepSpecularIntensity3 ;
-                    // StepSpecular = lerp(StepSpecular, 0, SpecularIntensityMask);//反向失去头发高光控制 
+                    StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _SpecularColor ;//* _StepSpecularIntensity3 ;
+                    StepSpecular = lerp(StepSpecular, 0, SpecularIntensityMask);//反向失去头发高光控制 
 
-                    // StepSpecular2 = step(1 - _StepSpecularWidth4 * 5, saturate(NdotV)) * SpecularIntensityMask * _StepSpecularIntensity4;
-                    // StepSpecular2 *= baseColor;
+                    StepSpecular2 = step(1 - _StepSpecularWidth4 * 5, saturate(NdotV)) * SpecularIntensityMask  ;//* _StepSpecularIntensity4;
+                    StepSpecular2 *= baseColor;
+                    StepSpecular *= baseColor;
+
+                    // StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _SpecularColor;//* _StepSpecularIntensity3 ;
                     // StepSpecular *= baseColor;
 
-                    StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _SpecularColor;//* _StepSpecularIntensity3 ;
-                    StepSpecular *= baseColor;
+                  
                 }
 
                 // BlinPhong⾼光
@@ -301,6 +317,11 @@ Shader "NPRToon/NPRToonHair"
                     Specular *= baseColor;
                 }
 
+                float SpecularRange = step(1 - _HairSpecularRange, saturate(NdotH));
+                float ViewRange = step(1 - _HairSpecularViewRange, saturate(NdotV));
+                float3 HairSpecular = SpecularIntensityMask * _HairSpecularIntensity * SpecularRange * ViewRange ;
+                HairSpecular = max(0, HairSpecular);
+                HairSpecular *= baseColor * _HairSpecularColor.rgb;
 
                 //边缘光
                 // float lambertD = max(0, -lambert);
@@ -318,15 +339,32 @@ Shader "NPRToon/NPRToonHair"
                                 
                 // half4 RimLight = Rim + RimDS;
 
-                float3 emission = baseColor.a * _EmissionColor ;//+ RimLight;
+                //float3 emission = baseColor.a * _EmissionColor ;//+ RimLight;
 
+
+                //边缘光
+                float lambertD = max(0, -lambert);
+                float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
+                float rimDot = pow(rim, _RimPow);
+                rimDot = _EnableLambert * lambert * rimDot + (1 - _EnableLambert) * rimDot;//开启平滑
+
+                float rimIntensity = smoothstep(0, _RimSmooth,  rimDot);               // 平滑0 , 1
+                half4 Rim = _EnableRim * pow(rimIntensity, 5) * _RimColor * baseColor ;//开启染色
+
+                rimDot = pow(rim, _DarkSideRimPow);//fresnel边缘光延伸
+                rimDot = _EnableLambert * lambertD * rimDot + (1 - _EnableLambert) * rimDot;//阴影面边缘光
+                rimIntensity = smoothstep(0, _DarkSideRimSmooth, rimDot);                   //阴影面边缘光平滑
+                half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
+
+                RimDS.a = 0.5;                
+                half4 RimLight = Rim + RimDS;
 
                 //高光融合
                 Specular = lerp(StepSpecular, Specular, LinearMask);     // //⾼光类型Layer 截断分布
                 Specular = lerp(0, Specular, LinearMask);
                 Specular = lerp(0, Specular, rampValue);                 //亮暗分布rampValue 加上AO暗部影响
                 //float3 FinalColor = Specular + RampShadowColor;         //Diffuse + Specular;
-                fixed3 result = Diffuse + Specular ;//+ emission;
+                fixed3 result = Diffuse + Specular + HairSpecular + _EmissionColor+RimLight;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -351,6 +389,10 @@ Shader "NPRToon/NPRToonHair"
                     return float4(Diffuse,1.0);
                 if (_TestMode ==mode++)
                     return float4(Specular,1.0);
+                if (_TestMode ==mode++)
+                    return float4(HairSpecular,1.0);
+                if (_TestMode ==mode++)
+                    return RimLight;
                 // if(_TestMode ==mode++){
                 //     float index = 10;
                 //     float rampH = RampPixelY * (index * 2 - 1); 

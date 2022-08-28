@@ -39,6 +39,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _FaceSDFTex:
+        m_Texture: {fileID: 2800000, guid: 4a78f1183b47602449067de4465bb590, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _LightMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -72,6 +76,7 @@ Material:
     - _Day: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _FaceLightOffset: -0.47
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -79,19 +84,28 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OffsetFactor: 7.3
+    - _OffsetUnits: 0
+    - _OutlinePower: 0
     - _Parallax: 0.02
     - _RampAOSmooth: 0.5
     - _RampShadowRange: 0.8
+    - _SDFThreshold: 0.628
     - _ShadowSmooth: 0.05
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TestMode: 0
+    - _USE_SMOOTH_NORMAL: 1
     - _UVSec: 0
     - _ZWrite: 1
+    - _group_outline: 1
+    - _group_shadow: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkShadowMultColor: {r: 0.7, g: 0.7, b: 0.8, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ShadowColor: {r: 0.78349745, g: 0.73268956, b: 0.8396226, a: 1}
     - _ShadowMultColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

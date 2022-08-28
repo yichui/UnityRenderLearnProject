@@ -27,9 +27,9 @@ Shader "NPRToon/NPRToonBody"
         _MetalMapV ("_MetalMapV", Range(0,1)) = 0
         _MetalMapIntensity ("_MetalMapIntensity", Range(0,1)) = 0
 
-        _StepSpecularWidth ("_StepSpecularWidth", Range(0,10)) = 0
-        _StepSpecularWidth2 ("_StepSpecularWidth2", Range(0,10)) = 0
-        _StepSpecularWidth3 ("_StepSpecularWidth3", Range(0,10)) = 0
+        _StepSpecularWidth ("丝袜裁边⾼光Width", Range(0,10)) = 0
+        _StepSpecularWidth2 ("布料边缘高光Width", Range(0,10)) = 0
+        _StepSpecularWidth3 ("头发高光Width", Range(0,10)) = 0
         _StepSpecularWidth4 ("_StepSpecularWidth4", Range(0,10)) = 0
         _SpecularPower ("Specular Power", Range(0,10)) = 8
         _SpecularColor("Specular Color",Color)=(0.5, 0.5, 0.5)
@@ -40,17 +40,32 @@ Shader "NPRToon/NPRToonBody"
 
         _CharacterIntensity("CharacterIntensity(角色整体亮度)",Range(0.1,10)) = 1
 
+
+         //边缘光
+        [Toggle]_EnableLambert("Enable Lambert",Range(0,1)) = 1 
+        _RimPow ("Rim Pow", Range(0,10)) = 1
+        _RimSmooth("Rim Smooth", Range(0,10)) = 0
+        [Toggle]_EnableRim("Enable Rim",Range(0,1)) = 1 
+        _RimColor("Rim Color",Color) = (1,1,1,1)
+        _DarkSideRimPow("DarkSideRimPow", Range(0,10)) = 0
+        _DarkSideRimSmooth("Dark Side Rim Smooth", Range(0,10)) = 0.5
+        _DarkSideRimColor("DarkSideRimColor",Color) = (1,1,1,1)
+        [Toggle] _EnableRimDS("Enable RimDS",Range(0,1)) = 1 
+
+
          // 描边
         [Main(outline, _, 3)] _group_outline ("描边", float) = 1
-        [Sub(outline)] _OutlinePower("Outline Power",Range(0,0.1)) = 0.05
-        [Sub(outline)]_LineColor("Line Color",Color)=(1,1,1,1)
-        [Sub(outline)]_OffsetFactor ("Offset Factor", Range(0,200)) = 0
-        [Sub(outline)]_OffsetUnits ("Offset Units", Range(0,200)) = 0
+         _OutlinePower("Outline Power",Range(0,0.1)) = 0.05
+       _LineColor("Line Color",Color)=(1,1,1,1)
+        _OffsetFactor ("Offset Factor", Range(0,200)) = 0
+        _OffsetUnits ("Offset Units", Range(0,200)) = 0
+
+        _Factor("Factor", float) = 1
         // 是否使用平滑法向量
-        [SubToggle(outline, __)] _USE_SMOOTH_NORMAL ("Use Smooth Normal", float) = 0
+        [Toggle] _USE_SMOOTH_NORMAL ("Use Smooth Normal", float) = 0
 
         //[KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,UV,BaseColor,BaseColor_A,Ramp,RampPlane)] _TestMode("_TestMode",Int) = 0
-        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse,Specular)] _TestMode("TestMode测试模式",Int) = 0
+        [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse,Specular,RimLight)] _TestMode("TestMode测试模式",Int) = 0
     }
 
     CGINCLUDE
@@ -75,6 +90,7 @@ Shader "NPRToon/NPRToonBody"
         float3 worldNormal : TEXCOORD1;
         float3 worldPos : TEXCOORD2;
         float3 positionVS : TEXCOORD3;
+        float3 vertColor : TEXCOORD4;
     };
 
      int _TestMode;    
@@ -106,10 +122,22 @@ Shader "NPRToon/NPRToonBody"
 
     half _Day;
 
+    //边缘光
+    float  _EnableLambert;
+    float _RimPow;
+    float _RimSmooth;
+    float _EnableRim;
+    fixed4 _RimColor;
+    float _DarkSideRimPow;
+    float _DarkSideRimSmooth;
+    fixed4 _DarkSideRimColor;
+    float _EnableRimDS;
+
+
      // 描边
     float _OutlinePower;
     float4 _LineColor;
-
+    float _Factor;
 
     ENDCG
 
@@ -128,25 +156,6 @@ Shader "NPRToon/NPRToonBody"
 
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
-            // struct a2v
-            // {
-            //     float4 vertex : POSITION;
-            //     float3 normal : NORMAL;
-            //     float2 uv : TEXCOORD0;
-            //     float4 vertexColor : Color;
-            // };
-
-            // struct v2f
-            // {
-            //     float4 pos : SV_POSITION;
-            //     float2 uv : TEXCOORD0;
-            //     float3 worldNormal : TEXCOORD1;
-            //     float3 worldPos : TEXCOORD2;
-            //     float3 positionVS : TEXCOORD3;
-            // };
-
-           
-
 
             v2f vert(a2v v)
             {
@@ -301,24 +310,25 @@ Shader "NPRToon/NPRToonBody"
                     Specular *= baseColor;
                 }
 
-
                 //边缘光
-                // float lambertD = max(0, -lambert);
-                // float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
-                // float rimDot = pow(rim, _RimPow);
-                // rimDot = _EnableLambert * lambert * rimDot + (1 - _EnableLambert) * rimDot;//开启平滑
+                float lambertD = max(0, -lambert);
+                float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
+                float rimDot = pow(rim, _RimPow);
+                rimDot = _EnableLambert * lambert * rimDot + (1 - _EnableLambert) * rimDot;//开启平滑
 
-                // float rimIntensity = smoothstep(0, _RimSmooth,  rimDot);               // 平滑0 , 1
-                // half4 Rim = _EnableRim * pow(rimIntensity, 5) * _RimColor * baseColor ;//开启染色
+                float rimIntensity = smoothstep(0, _RimSmooth,  rimDot);               // 平滑0 , 1
+                half4 Rim = _EnableRim * pow(rimIntensity, 5) * _RimColor * baseColor ;//开启染色
 
-                // rimDot = pow(rim, _DarkSideRimPow);//fresnel边缘光延伸
-                // rimDot = _EnableLambert * lambertD * rimDot + (1 - _EnableLambert) * rimDot;//阴影面边缘光
-                // rimIntensity = smoothstep(0, _DarkSideRimSmooth, rimDot);                   //阴影面边缘光平滑
-                // half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
-                                
-                // half4 RimLight = Rim + RimDS;
+                rimDot = pow(rim, _DarkSideRimPow);//fresnel边缘光延伸
+                rimDot = _EnableLambert * lambertD * rimDot + (1 - _EnableLambert) * rimDot;//阴影面边缘光
+                rimIntensity = smoothstep(0, _DarkSideRimSmooth, rimDot);                   //阴影面边缘光平滑
+                half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
 
-                float3 emission = baseColor.a * _EmissionColor ;//+ RimLight;
+                RimDS.a = 0.1;                
+                half4 RimLight = Rim + RimDS;
+               
+
+                //float3 emission = baseColor.a * _EmissionColor;
 
 
                 //高光融合
@@ -326,7 +336,7 @@ Shader "NPRToon/NPRToonBody"
                 Specular = lerp(0, Specular, LinearMask);
                 Specular = lerp(0, Specular, rampValue);                 //亮暗分布rampValue 加上AO暗部影响
                 //float3 FinalColor = Specular + RampShadowColor;         //Diffuse + Specular;
-                fixed3 result = Diffuse + Specular ;//+ emission;
+                fixed3 result = Diffuse + Specular  + RimLight;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -351,6 +361,9 @@ Shader "NPRToon/NPRToonBody"
                     return float4(Diffuse,1.0);
                 if (_TestMode ==mode++)
                     return float4(Specular,1.0);
+                if (_TestMode ==mode++)
+                    return RimLight;
+                    
                 // if(_TestMode ==mode++){
                 //     float index = 10;
                 //     float rampH = RampPixelY * (index * 2 - 1); 
@@ -363,46 +376,149 @@ Shader "NPRToon/NPRToonBody"
             ENDCG
         }
 
-        Pass
-        {
-            Blend SrcAlpha OneMinusSrcAlpha
-            Cull Front
-            ZWrite Off
-            Offset [_OffsetFactor], [_OffsetUnits]
+        // Pass
+        // {
+        //     Blend SrcAlpha OneMinusSrcAlpha
+        //     Cull Front
+        //     ZWrite Off
+        //     Offset [_OffsetFactor], [_OffsetUnits]
 
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile _ _USE_SMOOTH_NORMAL_ON
+        //     CGPROGRAM
+        //     #pragma vertex vert
+        //     #pragma fragment frag
+        //     #pragma multi_compile _ _USE_SMOOTH_NORMAL_ON
            
 
-            v2f vert (a2v v)
+        //     v2f vert (a2v v)
+        //     {
+        //         v2f o;
+        //         //顶点沿着法线方向扩张
+        //         #ifdef _USE_SMOOTH_NORMAL_ON
+        //             // 使用平滑的法线计算
+        //             v.vertex.xyz += normalize(v.tangent.xyz) * _OutlinePower;
+        //         #else
+        //             // 使用自带的法线计算
+        //             v.vertex.xyz += normalize(v.normal) * _OutlinePower * 0.2;
+        //         #endif
+        //         o.pos = UnityObjectToClipPos(v.vertex);
+
+        //         // float3 normalDir =  normalize(v.tangent.xyz);
+        //         // float4 pos = UnityObjectToClipPos(v.vertex);
+        //         // float3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV, normalDir);
+        //         // float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;//将法线变换到NDC空间
+        //         // pos.xy += _OutlinePower * ndcNormal.xy * 0.01;
+        //         // o.vertex = pos;
+        //         return o;
+        //     }
+        //     fixed4 frag (v2f i) : SV_Target
+        //     {
+        //         return _LineColor;
+        //     }
+            
+        //     ENDCG
+        // }
+        Pass
+        {
+            Tags {"LightMode"="ForwardBase"}
+
+            //开启正向剔除
+            Cull Front
+
+            CGPROGRAM
+        
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+
+            // sampler2D _MainTex;
+            // float4 _MainTex_ST;//尝试用贴图采样轮廓线颜色
+
+
+            // // 描边
+            // float _OutlinePower;
+            // float4 _LineColor;
+
+            // half _OutLineWidth;
+            // half4 _OutLineColor;
+           
+
+            // struct a2v
+            // {
+            //     float4 vertex : POSITION;
+            //     float3 normal : NORMAL;
+            //     float2 uv : TEXCOORD0;
+            //     float4 vertColor : COLOR;
+            //     float4 tangent : TANGENT;
+            // };
+
+            // struct v2f
+            // {
+            //     float4 pos : SV_POSITION;
+            //     float2 uv : TEXCOORD0;
+            //     float3 vertColor : TEXCOORD1;
+            // };
+
+            v2f vert(a2v v) 
             {
                 v2f o;
-                //顶点沿着法线方向扩张
-                #ifdef _USE_SMOOTH_NORMAL_ON
-                    // 使用平滑的法线计算
-                    v.vertex.xyz += normalize(v.tangent.xyz) * _OutlinePower;
-                #else
-                    // 使用自带的法线计算
-                    v.vertex.xyz += normalize(v.normal) * _OutlinePower * 0.2;
-                #endif
-                o.pos = UnityObjectToClipPos(v.vertex);
+                float3 pos = normalize(v.vertex.xyz);
+                // float3 normal = normalize(v.normal);
+                float3 normal = mul((float3x3)UNITY_MATRIX_IT_MV, v.tangent.xyz);
 
-                // float3 normalDir =  normalize(v.tangent.xyz);
-                // float4 pos = UnityObjectToClipPos(v.vertex);
-                // float3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV, normalDir);
-                // float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;//将法线变换到NDC空间
-                // pos.xy += _OutlinePower * ndcNormal.xy * 0.01;
-                // o.vertex = pos;
+                //点积是为了确定顶点对于几何中心的指向，判断此处的顶点是位于模型的凹处还是凸处
+                float D = dot(pos,normal);
+                //矫正顶点的方向值，判定是否是轮廓线
+                pos *= sign(D);
+                //描边的朝向插值，决定是偏向法线方向还是顶点方向
+                pos = lerp(normal,pos,_Factor);
+                //将顶点往指定方向挤出
+                v.vertex.xyz += pos*_OutlinePower;
+
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.vertColor = v.vertexColor.rgb;//如果有顶点色才使用
+                o.uv = TRANSFORM_TEX(v.uv,_MainTex);
+
                 return o;
+
             }
-            fixed4 frag (v2f i) : SV_Target
+
+            fixed4 frag(v2f i) : SV_TARGET
             {
-                return _LineColor;
+                i.vertColor = tex2D(_MainTex,i.uv).rgb;
+                return fixed4(_LineColor*i.vertColor,0);
             }
-            
+
             ENDCG
+        }
+
+        Pass
+        {
+            Tags {"LightMode" = "ShadowCaster"}
+
+            CGPROGRAM
+
+            #pragma target 3.0
+
+            #pragma vertex Shadowvert
+            #pragma fragment ShadowFrag
+
+            #include "UnityCG.cginc"
+
+            struct VertexData{
+                float4 position : POSITION; 
+            };
+
+            float4 Shadowvert(VertexData v) : SV_POSITION{
+                return UnityObjectToClipPos(v.position);
+            }
+
+            half4 ShadowFrag() : SV_TARGET{
+                return 0;
+            }
+ 
+            ENDCG
+
         }
     }
 }

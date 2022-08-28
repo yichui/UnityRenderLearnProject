@@ -67,46 +67,6 @@ Shader "NPRToon/NPRToonFace"
         Tags { "RenderType"="Opaque" }
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
-            Cull Front
-            ZWrite Off
-            Offset [_OffsetFactor], [_OffsetUnits]
-
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                //顶点沿着法线方向扩张
-                #ifdef _USE_SMOOTH_NORMAL_ON
-                    // 使用平滑的法线计算
-                    v.vertex.xyz += normalize(v.tangent.xyz) * _OutlinePower;
-                #else
-                    // 使用自带的法线计算
-                    v.vertex.xyz += normalize(v.normal) * _OutlinePower * 0.2;
-                #endif
-                o.vertex = UnityObjectToClipPos(v.vertex);
-
-                // float3 normalDir =  normalize(v.tangent.xyz);
-                // float4 pos = UnityObjectToClipPos(v.vertex);
-                // float3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV, normalDir);
-                // float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;//将法线变换到NDC空间
-                // pos.xy += _OutlinePower * ndcNormal.xy * 0.01;
-                // o.vertex = pos;
-                return o;
-            }
-            fixed4 frag (v2f i) : SV_Target
-            {
-                return _LineColor;
-            }
-            
-            ENDCG
-        }
-
-        Pass
-        {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -142,7 +102,6 @@ Shader "NPRToon/NPRToonFace"
                 // distance to edge in pixels (scalar) 
                 float pixelDist = (Threshold - color) / _FaceSDFTex_TexelSize.x * 2 / dtex; 
 
-
                 return step(pixelDist, 0.5); 
                 // return pixelDist; 
             }
@@ -168,23 +127,6 @@ Shader "NPRToon/NPRToonFace"
 
                 float3 faceLightMap =  tex2D(_FaceSDFTex, i.uv);
 
-                // float4 Front = mul(unity_ObjectToWorld,float4(0,0,1,0));
-                // float4 Right = mul(unity_ObjectToWorld,float4(1,0,0,0));
-                // float4 Up = mul(unity_ObjectToWorld,float4(0,1,0,0));
-                // float3 Left = -Right;
-                
-                // float FL =  dot(normalize(Front.xz), normalize(lightDir.xz));
-                // float LL = dot(normalize(Left.xz), normalize(lightDir.xz));
-                // float RL = dot(normalize(Right.xz), normalize(lightDir.xz));
-                // float faceLight = faceLightMap.r+_FaceLightOffset;
-                // float faceLightRamp = (FL > 0) * min((faceLight > LL),(1 > faceLight+RL) ) ;
-
-                // float3 diffuse = lerp( _ShadowColor*texCol,texCol,faceLightRamp);
-                // fixed3 result = diffuse * lightCol * texCol;
-                // half minValue = saturate(threshold - smoothness);
-                // half maxValue = saturate(threshold + smoothness);
-                // return smoothstep(minValue,maxValue,value);
-
 
                 //输入脸部的局部坐标，原神的每个英雄 局部坐标并不统一，因此要与每个英雄对应
                 float4 Front = normalize(mul(unity_ObjectToWorld,float4(0,1,0,0)));
@@ -202,20 +144,8 @@ Shader "NPRToon/NPRToonFace"
                 float Angle01       = 0.5*lerp(2-acos(RightAngleCos)*InvHalfPi,acos(LeftAngleCos)*InvHalfPi,LeftAngleCos>RightAngleCos);
                 float FaceLight     = IsFront * (1-step(Angle01,faceLight));
                 float3 diffuse = lerp( _ShadowColor*texCol.rgb,texCol.rgb,FaceLight);
+                //1.2，整体色阶
                 fixed3 result = diffuse * lightCol * texCol * 1.12;
-
-
-                // float3 Front = unity_ObjectToWorld._12_22_32;
-                // float3 Right = unity_ObjectToWorld._13_23_33;
-                // float FrontL = dot(normalize(Front.xz), normalize(lightDir.xz));
-                // float RightL = dot(normalize(Right.xz), normalize(lightDir.xz));
-                // RightL = -(acos(RightL)/3.14159265 - 0.5)*2;
-                // float FaceLight = (FrontL > 0) * min(
-                //     (lightCol.r > RightL),
-                //     (lightCol.g > -RightL)
-                // );
-                // float3 diffuse = lerp( _ShadowColor*texCol.rgb,texCol.rgb,FaceLight);
-                // fixed3 result = diffuse * lightCol * texCol;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -234,51 +164,7 @@ Shader "NPRToon/NPRToonFace"
                 return FaceLight;
 
                 return float4(result,1);
-                // return FaceLight;
             }
-            ENDCG
-        }
-
-        
-
-        Pass
-        {
-            Blend SrcAlpha OneMinusSrcAlpha
-            Cull Front
-            ZWrite On
-            Offset [_OffsetFactor], [_OffsetUnits]
-
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile _ _USE_SMOOTH_NORMAL_ON 
-
-            v2f vert (appdata v)
-            {
-                v2f o;
-                //顶点沿着法线方向扩张
-                #ifdef _USE_SMOOTH_NORMAL_ON
-                    // 使用平滑的法线计算
-                    v.vertex.xyz += normalize(v.tangent.xyz) * _OutlinePower;
-                #else
-                    // 使用自带的法线计算
-                    v.vertex.xyz += normalize(v.normal) * _OutlinePower * 0.2;
-                #endif
-                o.vertex = UnityObjectToClipPos(v.vertex);
-
-                // float3 normalDir =  normalize(v.tangent.xyz);
-                // float4 pos = UnityObjectToClipPos(v.vertex);
-                // float3 viewNormal = mul((float3x3)UNITY_MATRIX_IT_MV, normalDir);
-                // float3 ndcNormal = normalize(TransformViewToProjection(viewNormal.xyz)) * pos.w;//将法线变换到NDC空间
-                // pos.xy += _OutlinePower * ndcNormal.xy * 0.01;
-                // o.vertex = pos;
-                return o;
-            }
-            fixed4 frag (v2f i) : SV_Target
-            {
-                return _LineColor;
-            }
-            
             ENDCG
         }
     }

@@ -70,7 +70,7 @@ Material:
     m_Floats:
     - _BrightIntensity: 1
     - _BumpScale: 1
-    - _CharacterIntensity: 1
+    - _CharacterIntensity: 1.05
     - _Cutoff: 0.5
     - _DarkIntensity: 1
     - _Day: 0

@@ -70,7 +70,7 @@ Material:
     m_Floats:
     - _BrightIntensity: 1.15
     - _BumpScale: 1
-    - _CharacterIntensity: 1.12
+    - _CharacterIntensity: 1
     - _Cutoff: 0.5
     - _DarkIntensity: 0.7
     - _DarkSideRimPow: 4
@@ -98,8 +98,8 @@ Material:
     - _RampAOLerp: 0.8
     - _RampAOSmooth: 1
     - _RampShadowRange: 0.6
-    - _RimPow: 3.09
-    - _RimSmooth: 0.15
+    - _RimPow: 4.2
+    - _RimSmooth: 0.02
     - _ShadowSmooth: 0.6
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

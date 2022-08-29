@@ -23,6 +23,8 @@ Shader "NPRToon/NPRToonFace"
         [Sub(lighting)]_ShadowColor("Shadow Color",Color)=(0.7, 0.7, 0.7)
         [Sub(lighting)]_FaceLightOffset ("Face Lightmap Offset", Range(-1, 1)) = 0 
 
+        _CharacterIntensity("CharacterIntensity(角色整体亮度)",Range(0.1,10)) = 1.12
+
         [KeywordEnum(None,halfLambert,texCol_R,texCol_G,texCol_B,texCol_A,diffuse,FaceLight)] _TestMode("_TestMode",Int) = 0
     }
 
@@ -60,6 +62,8 @@ Shader "NPRToon/NPRToonFace"
     float4 _ShadowColor;
     float _SDFThreshold;
     float _FaceLightOffset;
+
+    float _CharacterIntensity;
 
     ENDCG
     SubShader
@@ -145,7 +149,7 @@ Shader "NPRToon/NPRToonFace"
                 float FaceLight     = IsFront * (1-step(Angle01,faceLight));
                 float3 diffuse = lerp( _ShadowColor*texCol.rgb,texCol.rgb,FaceLight);
                 //1.2，整体色阶
-                fixed3 result = diffuse * lightCol * texCol * 1.12;
+                fixed3 result = diffuse * lightCol * texCol * _CharacterIntensity;
 
                 int mode = 1;
                 if(_TestMode == mode++)

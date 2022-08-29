@@ -106,7 +106,7 @@ Material:
     - _SpecularPower: 8
     - _SrcBlend: 1
     - _StepSpecularWidth: 0
-    - _StepSpecularWidth2: 0
+    - _StepSpecularWidth2: 0.17
     - _StepSpecularWidth3: 0.93
     - _StepSpecularWidth4: 1
     - _TestMode: 0

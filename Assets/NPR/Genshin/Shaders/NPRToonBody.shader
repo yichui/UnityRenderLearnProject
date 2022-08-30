@@ -278,7 +278,7 @@ Shader "NPRToon/NPRToonBody"
                 float3 StepSpecular = 0;
                 float3 StepSpecular2 = 0;
                 //图⽚格式全部去掉勾选SRGB ⾼光类型Layer
-                float LinearMask = pow(LightMap.r, 1 / 2.2);   
+                float LinearMask = pow(SpecularLayerMask, 1 / 2.2);   
                 //高光类型         
                 float SpecularLayer = LinearMask * 255;            
                  //内部遮罩LightMap.b     

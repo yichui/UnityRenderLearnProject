@@ -25,3 +25,13 @@ https://www.cnblogs.com/TracePlus/p/4205798.html
 
 【游戏开发实战】下载原神模型，PMX转FBX，导入到Unity中，卡通渲染，绑定人形动画（附Demo工程）
 https://blog.csdn.net/linxinfa/article/details/121370565
+
+原神LightMap光照贴图通道信息含义：
+r :高光类型Layer,根据值域选择不同的高光类型(eg:BlinPhong 裁边视角光) 
+	丝袜裁边⾼光 ：0~50
+	布料裁边⾼光 ：50~150
+	头发：150~250
+	金属高光 ：250以上
+g :阴影AO ShadowAOMask 
+b :BlinPhong高光强度Mask遮罩 SpecularIntensityMask 
+a :Ramp类型Layer，根据值域选择不同的Ramp 

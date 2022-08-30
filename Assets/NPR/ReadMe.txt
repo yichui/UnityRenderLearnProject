@@ -27,16 +27,16 @@ https://www.cnblogs.com/TracePlus/p/4205798.html
 https://blog.csdn.net/linxinfa/article/details/121370565
 
 原神LightMap光照贴图通道信息含义：
-r :高光类型Layer,根据值域选择不同的高光类型(eg:BlinPhong 裁边视角光) 
-	丝袜裁边⾼光 ：0~50
-	布料裁边⾼光 ：50~150
-	头发：150~250
-	金属高光 ：250以上
-g :阴影AO ShadowAOMask 
-b :BlinPhong高光强度Mask遮罩 SpecularIntensityMask 
-a :Ramp过渡类型Layer，根据值域选择不同的Ramp 
-	0.0 ： 硬的物体 hard/emission/specular/silk
-    0.3 ： 软的物体 soft/common
-    0.5 ： 金属/金属投影 metal
-    0.7： 丝绸/丝袜 tights
-    1.0 ： 皮肤/头发 skin
+	r :高光类型Layer,根据值域选择不同的高光类型(eg:BlinPhong 裁边视角光) 
+		丝袜裁边⾼光 ：0~50
+		布料裁边⾼光 ：50~150
+		头发：150~250
+		金属高光 ：250以上
+	g :阴影AO ShadowAOMask 
+	b :BlinPhong高光强度Mask遮罩 SpecularIntensityMask 
+	a :Ramp过渡类型Layer，根据值域选择不同的Ramp 
+		0.0 ： 硬的物体 hard/emission/specular/silk
+		0.3 ： 软的物体 soft/common
+		0.5 ： 金属/金属投影 metal
+		0.7： 丝绸/丝袜 tights
+		1.0 ： 皮肤/头发 skin

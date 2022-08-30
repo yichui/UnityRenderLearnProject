@@ -94,7 +94,7 @@ Material:
     - _OffsetFactor: 0
     - _OffsetMul: 0.01
     - _OffsetUnits: 0
-    - _OutlinePower: 0
+    - _OutlinePower: 0.002
     - _Parallax: 0.02
     - _RampAOLerp: 0.8
     - _RampAOSmooth: 1

@@ -56,7 +56,7 @@ Shader "NPRToon/NPRToonHair"
         _DarkSideRimSmooth("Dark Side Rim Smooth", Range(0,10)) = 0.5
         _DarkSideRimColor("DarkSideRimColor",Color) = (1,1,1,1)
         [Toggle] _EnableRimDS("Enable RimDS",Range(0,1)) = 1 
-
+        _OffsetMul("_RimWidth",Range(0,0.1)) = 0.012
 
 
          // 描边
@@ -138,11 +138,13 @@ Shader "NPRToon/NPRToonHair"
     float _DarkSideRimSmooth;
     fixed4 _DarkSideRimColor;
     float _EnableRimDS;
+    float _OffsetMul;
 
      // 描边
     float _OutlinePower;
     float4 _LineColor;
 
+    sampler2D _CameraDepthTexture;
 
     ENDCG
 
@@ -161,6 +163,14 @@ Shader "NPRToon/NPRToonHair"
 
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
+
+            float4 TransformClipToViewPortPos(float4 positionCS)
+            {
+                float4 o = positionCS * 0.5f;
+                o.xy = float2(o.x,o.y*_ProjectionParams.x) + o.w;
+                o.zw = positionCS.zw;
+                return o/o.w;
+            }
 
             v2f vert(a2v v)
             {
@@ -342,7 +352,7 @@ Shader "NPRToon/NPRToonHair"
                 //float3 emission = baseColor.a * _EmissionColor ;//+ RimLight;
 
 
-                //边缘光
+                //边缘光计算(视向量做法)
                 float lambertD = max(0, -lambert);
                 float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
                 float rimDot = pow(rim, _RimPow);
@@ -357,14 +367,31 @@ Shader "NPRToon/NPRToonHair"
                 half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
 
                 RimDS.a = 0.5;                
-                half4 RimLight = Rim + RimDS;
+                half4 RimColor = Rim + RimDS;
+
+
+                //边缘光计算部分(屏幕空间深度边缘光)
+                /*float3 normalWS = i.worldNormal;
+                float3 normalVS = UnityWorldToViewPos(normalWS);
+                float3 positionVS = i.positionVS;
+                float3 samplePositionVS = float3(positionVS.xy + normalVS.xy*_OffsetMul,positionVS.z);
+                float4 samplePositionCS = UnityViewToClipPos(samplePositionVS);
+                float4 samplePositionVP = TransformClipToViewPortPos(samplePositionCS);
+
+                float depth = i.pos.z /i.pos.w;
+                float linearEyeDepth = LinearEyeDepth(depth);
+                float offsetDepth = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture,samplePositionVP));
+                float linearEyeOffsetDepth = LinearEyeDepth(offsetDepth);
+                float depthDiff = linearEyeOffsetDepth - linearEyeDepth;
+                float rimIntensity = step(_RimSmooth,depthDiff);
+                half3 RimColor = rimIntensity * _RimColor.rgb * _RimColor.a;*/
 
                 //高光融合
                 Specular = lerp(StepSpecular, Specular, LinearMask);     // //⾼光类型Layer 截断分布
                 Specular = lerp(0, Specular, LinearMask);
                 Specular = lerp(0, Specular, rampValue);                 //亮暗分布rampValue 加上AO暗部影响
                 //float3 FinalColor = Specular + RampShadowColor;         //Diffuse + Specular;
-                fixed3 result = Diffuse + Specular + HairSpecular + _EmissionColor+RimLight;
+                fixed3 result = Diffuse + Specular + HairSpecular + _EmissionColor + RimColor;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -392,7 +419,7 @@ Shader "NPRToon/NPRToonHair"
                 if (_TestMode ==mode++)
                     return float4(HairSpecular,1.0);
                 if (_TestMode ==mode++)
-                    return RimLight;
+                    return RimColor;//float4(RimColor,1.0);;
                 // if(_TestMode ==mode++){
                 //     float index = 10;
                 //     float rampH = RampPixelY * (index * 2 - 1); 

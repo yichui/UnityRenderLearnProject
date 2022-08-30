@@ -140,6 +140,7 @@ Shader "NPRToon/NPRToonBody"
     float _Factor;
 
     sampler2D _CameraDepthTexture;
+
     ENDCG
 
 
@@ -319,7 +320,7 @@ Shader "NPRToon/NPRToonBody"
                     Specular *= baseColor;
                 }
 
-                //边缘光计算视向量做法)
+                //边缘光计算(视向量做法)
                 /*float lambertD = max(0, -lambert);
                 float rim = 1 - saturate(dot(viewDir, i.worldNormal)); //Fresnel
                 float rimDot = pow(rim, _RimPow);
@@ -351,8 +352,8 @@ Shader "NPRToon/NPRToonBody"
                 float linearEyeOffsetDepth = LinearEyeDepth(offsetDepth);
                 float depthDiff = linearEyeOffsetDepth - linearEyeDepth;
                 float rimIntensity = step(_RimSmooth,depthDiff);
-                half3 rimColor = rimIntensity * _RimColor.rgb * _RimColor.a;
-                //half4 RimLight = half4(rimColor, 1);
+                half3 RimColor = rimIntensity * _RimColor.rgb * _RimColor.a;
+                //half4 RimLight = half4(RimColor, 1);
 
                 //float3 emission = baseColor.a * _EmissionColor;
 
@@ -362,7 +363,7 @@ Shader "NPRToon/NPRToonBody"
                 Specular = lerp(0, Specular, LinearMask);
                 Specular = lerp(0, Specular, rampValue);                 //亮暗分布rampValue 加上AO暗部影响
                 //float3 FinalColor = Specular + RampShadowColor;         //Diffuse + Specular;
-                fixed3 result = Diffuse + Specular  + rimColor;
+                fixed3 result = Diffuse + Specular  + RimColor;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -388,7 +389,7 @@ Shader "NPRToon/NPRToonBody"
                 if (_TestMode ==mode++)
                     return float4(Specular,1.0);
                 if (_TestMode ==mode++)
-                    return float4(rimColor,1.0);;
+                    return float4(RimColor,1.0);;
                     
                 // if(_TestMode ==mode++){
                 //     float index = 10;

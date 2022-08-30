@@ -32,16 +32,16 @@ Shader "NPRToon/NPRToonBody"
         [Main(Specular, _, 3)]_StepSpecularWidth ("丝袜裁边⾼光Width", Range(0,10)) = 0
         [Sub(Specular)]_StepSpecularWidth2 ("布料边缘高光Width", Range(0,10)) = 0
         [Sub(Specular)]_StepSpecularWidth3 ("头发高光Width", Range(0,10)) = 0
-        [Sub(Specular)]_StepSpecularWidth4 ("_StepSpecularWidth4", Range(0,10)) = 0
+        //[Sub(Specular)]_StepSpecularWidth4 ("_StepSpecularWidth4", Range(0,10)) = 0
         [Sub(Specular)]_SpecularPower ("Specular Power", Range(0,10)) = 8
         [Sub(Specular)]_SpecularColor("Specular Color",Color)=(0.5, 0.5, 0.5)
 
+        [Space(20)]
         [Toggle]_Day("Day白天黑夜",Range(0,1)) = 0 //白天黑夜
-
-        _LightThreshold("LightThreshold(阴影Width)",Range(0,1)) = 0.2 
-
+        [Space(20)]
+        _LightThreshold("LightThreshold(阴影宽度)",Range(0,1)) = 0.2 
+        [Space(20)]
         _CharacterIntensity("CharacterIntensity(角色整体亮度)",Range(0.1,10)) = 1
-
 
         //边缘光
          [Space(20)]
@@ -54,21 +54,18 @@ Shader "NPRToon/NPRToonBody"
         // _DarkSideRimSmooth("Dark Side Rim Smooth", Range(0,10)) = 0.5
         // _DarkSideRimColor("DarkSideRimColor",Color) = (1,1,1,1)
         // [Toggle] _EnableRimDS("Enable RimDS",Range(0,1)) = 1
-        [Main(Rim Color, _, 3)]_RimSmooth("Rim Smooth", Range(0,10)) = 0 
-        [Sub(Rim Color)]_RimColor("Rim Color",Color) = (1,1,1,1)
-        [Sub(Rim Color)]_OffsetMul("_RimWidth",Range(0,0.1)) = 0.012
+        [Main(Rim Color, _, 3)]_RimColor("Rim Color",Color) = (1,1,1,1)
+        [Sub(Rim Color)]_RimSmooth("Rim Smooth", Range(0,10)) = 0 
+        [Sub(Rim Color)]_OffsetMul("Rim Width",Range(0,0.1)) = 0.012
 
-         // 描边
+        //描边
         [Space(20)]
         [Main(outline, _, 3)] _group_outline ("描边", float) = 1
         [Sub(outline)] _OutlinePower("Outline Power",Range(0,0.1)) = 0.05
-        [Sub(outline)]_LineColor("Line Color",Color)=(1,1,1,1)
-        [Sub(outline)]  _OffsetFactor ("Offset Factor", Range(0,200)) = 0
-        [Sub(outline)]  _OffsetUnits ("Offset Units", Range(0,200)) = 0
+        [Sub(outline)]_LineColor("Outline Color",Color)=(1,1,1,1)
         [Sub(outline)] _Factor("Outline Factor", float) = 1
-       
 
-        //[KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,UV,BaseColor,BaseColor_A,Ramp,RampPlane)] _TestMode("_TestMode",Int) = 0
+        //输出各种模式颜色
         [KeywordEnum(None,LightMap_R,LightMap_G,LightMap_B,LightMap_A,halfLambert,rampValue,BaseColor,ShadowAOMask,Ramp,Diffuse,Specular,RimLight)] _TestMode("TestMode测试模式",Int) = 0
     }
 
@@ -121,7 +118,7 @@ Shader "NPRToon/NPRToonBody"
     sampler2D _MetalMap;
     float _MetalMapV,_MetalMapIntensity;
 
-    float _StepSpecularWidth,_StepSpecularWidth2,_StepSpecularWidth3,_StepSpecularWidth4;
+    float _StepSpecularWidth,_StepSpecularWidth2,_StepSpecularWidth3;//,_StepSpecularWidth4;
     float _SpecularPower;
 
     half _Day;
@@ -362,13 +359,15 @@ Shader "NPRToon/NPRToonBody"
 
                 //float3 emission = baseColor.a * _EmissionColor;
 
-
                 //高光融合
-                Specular = lerp(StepSpecular, Specular, LinearMask);     // //⾼光类型Layer 截断分布
+
+                //⾼光类型Layer 截断分布
+                Specular = lerp(StepSpecular, Specular, LinearMask);     
                 Specular = lerp(0, Specular, LinearMask);
-                Specular = lerp(0, Specular, rampValue);                 //亮暗分布rampValue 加上AO暗部影响
+                //亮暗分布rampValue 加上AO暗部影响
+                Specular = lerp(0, Specular, rampValue);                 
                 //float3 FinalColor = Specular + RampShadowColor;         //Diffuse + Specular;
-                fixed3 result = Diffuse + Specular  + RimColor;
+                fixed3 result = Diffuse + Specular + RimColor;
 
                 int mode = 1;
                 if(_TestMode == mode++)
@@ -448,12 +447,12 @@ Shader "NPRToon/NPRToonBody"
             ENDCG
         }
 
+        //该pass是为了使得屏幕空间深度生效
         Pass
         {
             Tags {"LightMode" = "ShadowCaster"}
 
             CGPROGRAM
-
 
             #pragma vertex Shadowvert
             #pragma fragment ShadowFrag

@@ -129,7 +129,7 @@ Shader "NPRToon/NPRToonFace"
                 //------------------------【Diffuse】-----------------------------
                 fixed halfLambert = 0.5 * NdotL + 0.5;
 
-                float3 faceLightMap =  tex2D(_FaceSDFTex, i.uv);
+                float4 faceLightMap =  tex2D(_FaceSDFTex, i.uv);
 
 
                 //输入脸部的局部坐标，原神的每个英雄 局部坐标并不统一，因此要与每个英雄对应
@@ -139,7 +139,7 @@ Shader "NPRToon/NPRToonFace"
                 
                 #define InvHalfPi 0.6366197722844561
 
-                float faceLight = faceLightMap.b + _FaceLightOffset; //用来和 头发 身体的明暗过渡对齐
+                float faceLight = faceLightMap.a + _FaceLightOffset; //用来和 头发 身体的明暗过渡对齐
 
                 float IsFront       = dot(normalize(Front.xz), normalize(lightDir.xz))>0;
                 float LeftAngleCos  = dot(normalize(Left.xz), normalize(lightDir.xz));

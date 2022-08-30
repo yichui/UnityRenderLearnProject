@@ -396,29 +396,29 @@ Shader "NPRToon/NPRToonHair"
                 int mode = 1;
                 if(_TestMode == mode++)
                     return LightMap.r;
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return LightMap.g; //阴影 Mask
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return LightMap.b; //漫反射 Mask
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return LightMap.a; //漫反射 Mask
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return halfLambert; //halfLambert
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return rampValue; //rampValue
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return baseColor.xyzz; //BaseColor
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return ShadowAOMask; //ShadowAOMask
-                if(_TestMode ==mode++)
+                if(_TestMode == mode++)
                     return float4(finalRamp,0);
-                if (_TestMode ==mode++)
+                if (_TestMode == mode++)
                     return float4(Diffuse,1.0);
-                if (_TestMode ==mode++)
+                if (_TestMode == mode++)
                     return float4(Specular,1.0);
-                if (_TestMode ==mode++)
+                if (_TestMode == mode++)
                     return float4(HairSpecular,1.0);
-                if (_TestMode ==mode++)
+                if (_TestMode == mode++)
                     return RimColor;//float4(RimColor,1.0);;
                 // if(_TestMode ==mode++){
                 //     float index = 10;

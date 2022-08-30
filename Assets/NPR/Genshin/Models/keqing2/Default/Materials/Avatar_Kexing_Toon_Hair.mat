@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Avatar_Kexing_Toon_Hair
   m_Shader: {fileID: 4800000, guid: fd830fc12442d534cabd937d4232bdff, type: 3}
-  m_ShaderKeywords: _ENABLERIM_ON _TESTMODE_NONE
+  m_ShaderKeywords: _ENABLELAMBERT_ON _ENABLERIMDS_ON _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -73,14 +73,14 @@ Material:
     - _CharacterIntensity: 0.95
     - _Cutoff: 0.5
     - _DarkIntensity: 0.5
-    - _DarkSideRimPow: 0
-    - _DarkSideRimSmooth: 0.5
+    - _DarkSideRimPow: 1
+    - _DarkSideRimSmooth: 1
     - _Day: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EnableLambert: 0
-    - _EnableRim: 1
-    - _EnableRimDS: 0
+    - _EnableLambert: 1
+    - _EnableRim: 0
+    - _EnableRimDS: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -96,12 +96,12 @@ Material:
     - _OffsetFactor: 0
     - _OffsetMul: 0
     - _OffsetUnits: 0
-    - _OutlinePower: 0
+    - _OutlinePower: 0.01
     - _Parallax: 0.02
     - _RampAOSmooth: 0.376
     - _RampShadowRange: 0.7
-    - _RimPow: 1
-    - _RimSmooth: 0.79
+    - _RimPow: 1.5
+    - _RimSmooth: 0.8
     - _ShadowSmooth: 0.05
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -112,18 +112,18 @@ Material:
     - _StepSpecularWidth3: 0
     - _StepSpecularWidth4: 0
     - _TestMode: 0
-    - _USE_SMOOTH_NORMAL: 0
+    - _USE_SMOOTH_NORMAL: 1
     - _UVSec: 0
     - _ZWrite: 1
     - _group_outline: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkShadowMultColor: {r: 0.7, g: 0.7, b: 0.8, a: 1}
-    - _DarkSideRimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DarkSideRimColor: {r: 0.09534168, g: 0, b: 1, a: 1}
     - _EmissionColor: {r: 0.0961369, g: 0.03529412, b: 0.13207549, a: 1}
     - _HairSpecularColor: {r: 0.6326249, g: 0.53800285, b: 0.735849, a: 1}
-    - _LineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 0.2, g: 0.2, b: 0.2, a: 0}
+    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor: {r: 0.8307481, g: 0.80784315, b: 1, a: 0}
     - _ShadowMultColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 0.8490566, g: 0.8490566, b: 0.8490566, a: 1}
   m_BuildTextureStacks: []

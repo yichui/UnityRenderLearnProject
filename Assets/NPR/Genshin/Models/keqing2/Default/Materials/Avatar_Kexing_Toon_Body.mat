@@ -68,11 +68,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BrightIntensity: 1.15
+    - _BrightIntensity: 1.3
     - _BumpScale: 1
-    - _CharacterIntensity: 1.12
+    - _CharacterIntensity: 1
     - _Cutoff: 0.5
-    - _DarkIntensity: 0.7
+    - _DarkIntensity: 0.6
     - _DarkSideRimPow: 4
     - _DarkSideRimSmooth: 2
     - _Day: 0
@@ -86,30 +86,30 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _LightThreshold: 0.6
-    - _MetalMapIntensity: 0.179
-    - _MetalMapV: 0.245
+    - _MetalMapIntensity: 2
+    - _MetalMapV: 0.45
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _OffsetFactor: 0
-    - _OffsetMul: 0.01
+    - _OffsetMul: 0.004
     - _OffsetUnits: 0
     - _OutlinePower: 0.002
     - _Parallax: 0.02
     - _RampAOLerp: 0.8
-    - _RampAOSmooth: 1
+    - _RampAOSmooth: 0.8
     - _RampShadowRange: 0.6
     - _RimPow: 4.2
-    - _RimSmooth: 1
+    - _RimSmooth: 0
     - _ShadowSmooth: 0.6
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularPower: 8
+    - _SpecularPower: 8.32
     - _SrcBlend: 1
-    - _StepSpecularWidth: 0
-    - _StepSpecularWidth2: 0.17
-    - _StepSpecularWidth3: 0.93
-    - _StepSpecularWidth4: 1
+    - _StepSpecularWidth: 0.2
+    - _StepSpecularWidth2: 0.33
+    - _StepSpecularWidth3: 0
+    - _StepSpecularWidth4: 0
     - _TestMode: 0
     - _USE_SMOOTH_NORMAL: 0
     - _UVSec: 0
@@ -121,7 +121,7 @@ Material:
     - _DarkSideRimColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _LineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _RimColor: {r: 0.1981132, g: 0.1981132, b: 0.1981132, a: 1}
+    - _RimColor: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 1}
     - _ShadowMultColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SpecularColor: {r: 0.51327986, g: 0.40472588, b: 0.8018868, a: 1}
+    - _SpecularColor: {r: 0.11914946, g: 0, b: 0.9433962, a: 1}
   m_BuildTextureStacks: []

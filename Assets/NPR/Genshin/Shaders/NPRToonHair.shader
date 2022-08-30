@@ -9,8 +9,8 @@ Shader "NPRToon/NPRToonHair"
         _EmissionColor("Emission Color",Color)=(1,1,1,1)
 
         //光照阴影
-        _ShadowMultColor("Shadow Color暖色调",Color) = (1,1,1) //暖色调
-        _DarkShadowMultColor("Shadow Color冷色调",Color) = (0.7,0.7,0.8) //冷色调
+        // _ShadowMultColor("Shadow Color暖色调",Color) = (1,1,1) //暖色调
+        // _DarkShadowMultColor("Shadow Color冷色调",Color) = (0.7,0.7,0.8) //冷色调
 
         //控制的即是采样Lanbert的水平长度，同时控制了Ao的强度，也控制了Lambert的强度，而且Ao的数值比Lanbert还要小
         _RampShadowRange ("Ramp Shadow Range(Ramp效果的Width)", range(0.0, 1.0)) = 0.8
@@ -106,8 +106,8 @@ Shader "NPRToon/NPRToonHair"
 
     // Diffuse
     sampler2D _ShadowRamp;
-    half3 _ShadowMultColor;
-    half3 _DarkShadowMultColor;
+    // half3 _ShadowMultColor;
+    // half3 _DarkShadowMultColor;
     half _ShadowSmooth;
     float _RampShadowRange;
     half _RampAOSmooth;
@@ -366,7 +366,7 @@ Shader "NPRToon/NPRToonHair"
                 rimIntensity = smoothstep(0, _DarkSideRimSmooth, rimDot);                   //阴影面边缘光平滑
                 half4 RimDS = _EnableRimDS * pow(rimIntensity, 5) * _DarkSideRimColor * baseColor;
 
-                RimDS.a = 0.5;                
+                RimDS.a = 0.1;                
                 half4 RimColor = Rim + RimDS;
 
 
@@ -420,12 +420,7 @@ Shader "NPRToon/NPRToonHair"
                     return float4(HairSpecular,1.0);
                 if (_TestMode == mode++)
                     return RimColor;//float4(RimColor,1.0);;
-                // if(_TestMode ==mode++){
-                //     float index = 10;
-                //     float rampH = RampPixelY * (index * 2 - 1); 
-                //     float3 rampC = tex2D(_ShadowRamp, saturate(float2(i.uv.x,rampH))); 
-                //     return float4(rampC,0);
-                // }
+                
 
                 return float4(result,1);;
             }
@@ -472,6 +467,33 @@ Shader "NPRToon/NPRToonHair"
             }
             
             ENDCG
+        }
+        Pass
+        {
+            Tags {"LightMode" = "ShadowCaster"}
+
+            CGPROGRAM
+
+
+            #pragma vertex Shadowvert
+            #pragma fragment ShadowFrag
+
+            #include "UnityCG.cginc"
+
+            struct VertexData{
+                float4 position : POSITION; 
+            };
+
+            float4 Shadowvert(VertexData v) : SV_POSITION{
+                return UnityObjectToClipPos(v.position);
+            }
+
+            half4 ShadowFrag() : SV_TARGET{
+                return 0;
+            }
+ 
+            ENDCG
+
         }
     }
 }

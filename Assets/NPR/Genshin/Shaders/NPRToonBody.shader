@@ -26,7 +26,7 @@ Shader "NPRToon/NPRToonBody"
         [Space(20)]
         [Main(MetalMap, _, 3)]_MetalMap ("MetalMap", 2D) = "white" {}
         [Sub(MetalMap)]_MetalMapV ("_MetalMapV", Range(0,1)) = 0
-        [Sub(MetalMap)]_MetalMapIntensity ("_MetalMapIntensity", Range(0,1)) = 0
+        [Sub(MetalMap)]_MetalMapIntensity ("_MetalMapIntensity", Range(0,5)) = 0
 
         [Space(20)]
         [Main(Specular, _, 3)]_StepSpecularWidth ("丝袜裁边⾼光Width", Range(0,10)) = 0

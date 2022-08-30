@@ -76,7 +76,7 @@ Material:
     - _Day: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _FaceLightOffset: -0.19
+    - _FaceLightOffset: -0.42
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -84,13 +84,13 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OffsetFactor: 7.3
+    - _OffsetFactor: 0
     - _OffsetUnits: 0
     - _OutlinePower: 0
     - _Parallax: 0.02
     - _RampAOSmooth: 0.5
     - _RampShadowRange: 0.8
-    - _SDFThreshold: 0.628
+    - _SDFThreshold: 0.6
     - _ShadowSmooth: 0.05
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1

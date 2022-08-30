@@ -265,14 +265,10 @@ Shader "NPRToon/NPRToonBody"
                 float3 Diffuse = lerp(darkArea, brightArea, IsBrightSide * RampIntensity) * _CharacterIntensity * lightColor.rgb;
                                 
  
-
-                // float3 finalRGB = Diffuse;
-
                 //float3 Diffuse = baseColor.rgb;
                 float4 MetalMap = tex2D(_MetalMap, mul((float3x3)UNITY_MATRIX_V, normalDir).xy).r ;
                 MetalMap = saturate(MetalMap);
                 MetalMap = step(_MetalMapV, MetalMap) * _MetalMapIntensity;
-
 
                 float3 Specular = 0;
                 float3 StepSpecular = 0;
@@ -288,14 +284,14 @@ Shader "NPRToon/NPRToonBody"
                 if (SpecularLayer > 0 && SpecularLayer < 50)//丝袜
                 {
                     // x<=y返回1，否则返回0
-                    StepSpecular = step(1 - _StepSpecularWidth, saturate(NdotV)) * _SpecularColor;//*_StepSpecularIntensity;//可做修改* SpecularIntensityMask                  
+                    StepSpecular = step(1 - _StepSpecularWidth, saturate(NdotV)) * _SpecularColor * SpecularIntensityMask       ;//*_StepSpecularIntensity;//可做修改           
                     StepSpecular *= baseColor;           
                 }
                 // 裁边⾼光 (⾼光在暗部消失)
                 if (SpecularLayer > 50 && SpecularLayer < 150)//布料边缘高光               
                 {
                     // x<=y返回1，否则返回0
-                    StepSpecular = step(1 - _StepSpecularWidth2, saturate(NdotV)) * 1 * _SpecularColor;//*_StepSpecularIntensity2 ;//* SpecularIntensityMask
+                    StepSpecular = step(1 - _StepSpecularWidth2, saturate(NdotV)) * 1 * _SpecularColor* SpecularIntensityMask;//*_StepSpecularIntensity2 ;//
                     StepSpecular *= baseColor;           
                 }
 
@@ -309,7 +305,7 @@ Shader "NPRToon/NPRToonBody"
                     // StepSpecular2 *= baseColor;
                     // StepSpecular *= baseColor;
 
-                    StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _SpecularColor;//* _StepSpecularIntensity3 ;
+                    StepSpecular = step(1 - _StepSpecularWidth3, saturate(NdotV)) * 1 * _SpecularColor * SpecularIntensityMask;//* _StepSpecularIntensity3 ;
                     StepSpecular *= baseColor;
                 }
 

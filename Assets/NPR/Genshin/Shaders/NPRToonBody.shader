@@ -154,6 +154,8 @@ Shader "NPRToon/NPRToonBody"
         Pass
         {
             NAME "CHARACTER_BASE"
+            Tags {"LightMode" = "ForwardBase"}
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

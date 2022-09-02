@@ -98,7 +98,9 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LineColor: {r: 0.2924528, g: 0.2924528, b: 0.2924528, a: 1}
+    - _LineColor: {r: 1, g: 0.8160377, b: 0.8160377, a: 1}
+    - _RimLightColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 0.6117647}
+    - _RimLightDir: {r: 1, g: 0, b: -1, a: 0}
     - _SpecAddColor: {r: 0.509434, g: 0.46706474, b: 0.18983625, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

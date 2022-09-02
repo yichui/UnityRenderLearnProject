@@ -16,9 +16,13 @@ Shader "NPRToon/NMRToon"
         _OutlinePower("Outline Power",Range(0,100)) = 7
         _LineColor("Outline Color",Color)=(1,1,1,1)
          _Factor("Outline Factor", float) = 1
+
+        _RimLightDir("Rim Light Dir", Vector) = (1,0,-1,0) 
+        _RimLightColor("Rim Light Color", Color) = (1,1,1,1) 
+
         //_SpecularIntensity("Specular Intensity", Range(0,10)) = 1
          //输出各种模式颜色
-        [KeywordEnum(None,IlmMap_R,IlmMap_G,IlmMap_B,IlmMap_A,halfLambert,BaseColor)] _TestMode("TestMode测试模式",Int) = 0
+        [KeywordEnum(None,IlmMap_R,IlmMap_G,IlmMap_B,IlmMap_A,halfLambert,BaseColor,BaseColorAlpha(BaseMask),RimColor)] _TestMode("TestMode测试模式",Int) = 0
     }
     SubShader
     {
@@ -67,6 +71,8 @@ Shader "NPRToon/NMRToon"
             float _SpecSize;
             float4 _SpecAddColor;
 
+            float4 _RimLightDir,_RimLightColor;
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -93,11 +99,12 @@ Shader "NPRToon/NMRToon"
 
                 half4 baseMap = tex2D(_BaseMap, uv1);
                 half3 baseColor = baseMap.rgb;
-
+                //用来区分皮肤和非皮肤区域
+                half baseMask = baseMap.a;
 
                 half4 sssMap = tex2D(_SSSMap, uv1);
                 half3 sssColor = sssMap.rgb;
-
+                half sssAlpha = sssMap.a;//边缘光的强度控制
                 //ILM贴图
                 half4 ILMMap = tex2D(_IlmMap, uv1);
                 float specIntensity = ILMMap.r;//控制高光的强度
@@ -124,15 +131,27 @@ Shader "NPRToon/NMRToon"
                 float specTerm = NDotV * ao +  diffuseContorl;
                 specTerm = halfLambert * 0.9 + specTerm * 0.1;
                 half toonSpec =  saturate((specTerm - (1.0 - specSize * _SpecSize)) * 500);
-                half3 specColor = (_SpecAddColor.xyz + baseColor ) * 0.5;
+                half3 specColor = (_SpecAddColor.rgb + baseColor ) * 0.5;
                 half3 finalSpec = specColor * toonSpec * specIntensity;
 
                 //内描线
                 half3 innerLineColor = lerp(baseColor * 0.2, fixed3(1,1,1), innnerLine) ;//innnerLine.xxx;
                 // half3 innerLineColor = innnerLine.xxx;
                 half3 finalLine = innerLineColor * detailColor;
+
+                //补光、边缘光
+                float3 lightDirRim = normalize(mul((float3x3)UNITY_MATRIX_I_V, _RimLightDir.xyz));
+                half NDotLRim = (dot(normalDir, lightDirRim) + 1.0) * 0.5;
+                half rimLighTerm = NDotLRim + diffuseContorl;
+                half3 rimColor  =  (_RimLightColor.rgb + baseColor) * 0.5;
+                //half toonDiffuse = step(0.1, halfLambert);
+                half toonRim =  saturate((rimLighTerm - _ToonThesHold) * 20) * sssAlpha;
+
+                //乘以toonDiffuse是不需要阴影部分的结果
+                // _RimLightColor.a控制强度
+                half3 finalRimLight = toonRim * rimColor * baseMask * toonDiffuse * _RimLightColor.a;
               
-                half3 finalColor = (finalSpec + finalDiffuse)* finalLine;
+                half3 finalColor = (finalSpec + finalDiffuse + finalRimLight)* finalLine;
                 //颜色校正
                 finalColor = sqrt(max(exp2(log2(max(finalColor, 0.0))*2.2),0.0));
                 //测试模式使用
@@ -150,7 +169,10 @@ Shader "NPRToon/NMRToon"
                 
                 if(_TestMode ==mode++)
                     return baseColor.xyzz; //BaseColor
-              
+                if(_TestMode ==mode++)
+                    return baseMask;
+                 if(_TestMode ==mode++)
+                    return finalRimLight.xyzz; //BaseColor
 
                 return half4(finalColor,1);//half4(finalDiffuse,1);// toonDiffuse.xxxx;//NDotL.xxxx;
             }

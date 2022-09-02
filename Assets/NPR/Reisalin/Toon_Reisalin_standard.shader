@@ -6,7 +6,7 @@ Shader "NPRToon/Toon_Reisalin_standard"
         _NormalMap("Normal Map",2D) = "bump"{}
         _AOMap("AO Map", 2D)= "white" {}
         _DiffuseMap("Diffuse Map", 2D)= "white" {}
-
+        _SpecMap("Spec Map", 2D)= "white" {}
     }
     SubShader
     {
@@ -28,7 +28,7 @@ Shader "NPRToon/Toon_Reisalin_standard"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
-                float2 tangent : TANGENT;
+                float4 tangent : TANGENT;
                 float3 normal : NORMAL;
                 float4 color :COLOR;
             };
@@ -46,13 +46,13 @@ Shader "NPRToon/Toon_Reisalin_standard"
 
             };
 
-            sampler2D _BaseMap, _NormalMap, _AOMap, _DiffuseMap;
+            sampler2D _BaseMap, _NormalMap, _AOMap, _DiffuseMap, _SpecMap;
 
 
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
 
                 o.worldPos =  mul(unity_ObjectToWorld, v.vertex).xyz;
@@ -66,16 +66,24 @@ Shader "NPRToon/Toon_Reisalin_standard"
 
             half4 frag (v2f i) : SV_Target
             {
-                half4 baseColor = tex2D(_BaseMap, i.uv);
 
                 half3 normalDir = normalize(i.worldNormal);
                 half3 tangentDir = normalize(i.tangentDir);
                 half3 binormalDir = normalize(i.binormalDir);
                 float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+                //贴图数据
+                half4 baseColor = tex2D(_BaseMap, i.uv);
+                half aoColor = tex2D(_AOMap, i.uv).r;
+                half4 specMap = tex2D(_SpecMap, i.uv);
+                half specMask = specMap.b;
+                half specSmoothness = specMap.a;
+                //法线贴图
+                half4 normalMap = tex2D(_NormalMap, i.uv);
+                half3 normalData = UnpackNormal(normalMap);
 
-                
-                return col;
+
+                return baseColor;
             }
             ENDCG
         }

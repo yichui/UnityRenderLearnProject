@@ -51,12 +51,23 @@ internal class ASEMaterialInspector : ShaderGUI
 
 
 	// Reflection Fields
+
+	private FieldInfo m_previewDirDefault = null;
+
 	private Type m_modelInspectorType = null;
 	private MethodInfo m_renderMeshMethod = null;
 	private Type m_previewGUIType = null;
 	private MethodInfo m_dragMethod = null;
 	private FieldInfo m_selectedField = null;
 	private FieldInfo m_infoField = null;
+
+#if UNITY_2020_1_OR_NEWER
+	private Type m_previewSettingsType = null;
+	object m_previewSettingsInstance;
+	FieldInfo previewDirInfo;
+	FieldInfo shadedMaterialInfo;
+	FieldInfo activeMaterialInfo;
+#endif
 
 #if UNITY_2018_2_OR_NEWER
 	public override void OnClosed( Material material )
@@ -437,6 +448,11 @@ internal class ASEMaterialInspector : ShaderGUI
 				m_selectedField = typeof( MaterialEditor ).GetField( "m_SelectedMesh", BindingFlags.Instance | BindingFlags.NonPublic );
 			}
 
+			if( m_previewDirDefault == null )
+			{
+				m_previewDirDefault = typeof( MaterialEditor ).GetField( "m_PreviewDir" , BindingFlags.Instance | BindingFlags.NonPublic );
+			}
+
 			m_selectedMesh = (int)m_selectedField.GetValue( materialEditor );
 
 			if( m_selectedMesh != 0 )
@@ -448,8 +464,15 @@ internal class ASEMaterialInspector : ShaderGUI
 				}
 			}
 		}
-	}
 
+		if( GUILayout.Button( "R" ,GUILayout.MaxWidth(17), GUILayout.MaxHeight( 13 ) ) )
+		{
+			m_previewDir = new Vector2( 0 , 0 );
+			if( m_previewDirDefault != null )
+				m_previewDirDefault.SetValue( materialEditor , m_previewDir );
+		}
+	}
+	
 	public override void OnMaterialInteractivePreviewGUI( MaterialEditor materialEditor, Rect r, GUIStyle background )
 	{
 		if( Event.current.type == EventType.DragExited )
@@ -497,12 +520,38 @@ internal class ASEMaterialInspector : ShaderGUI
 
 		m_previewDir = (Vector2)m_dragMethod.Invoke( m_previewGUIType, new object[] { m_previewDir, r } );
 
+#if UNITY_2020_1_OR_NEWER
+		if( m_previewSettingsType == null )
+		{
+			m_previewSettingsType = m_modelInspectorType.GetNestedType( "PreviewSettings",BindingFlags.NonPublic);
+		}
+
+		if( m_previewSettingsInstance == null )
+		{
+			m_previewSettingsInstance = Activator.CreateInstance( m_previewSettingsType );
+			previewDirInfo = m_previewSettingsType.GetField( "previewDir", BindingFlags.Instance | BindingFlags.Public );
+			shadedMaterialInfo = m_previewSettingsType.GetField( "shadedPreviewMaterial", BindingFlags.Instance | BindingFlags.Public );
+			activeMaterialInfo = m_previewSettingsType.GetField( "activeMaterial", BindingFlags.Instance | BindingFlags.Public );
+		}
+
+		shadedMaterialInfo.SetValue( m_previewSettingsInstance, mat );
+		activeMaterialInfo.SetValue( m_previewSettingsInstance, mat );
+		previewDirInfo.SetValue( m_previewSettingsInstance, m_previewDir );
+		
+		if( Event.current.type == EventType.Repaint )
+		{
+			m_previewRenderUtility.BeginPreview( r, background );
+			m_renderMeshMethod.Invoke( m_modelInspectorType, new object[] { m_targetMesh, m_previewRenderUtility, m_previewSettingsInstance, -1 } );
+			m_previewRenderUtility.EndAndDrawPreview( r );
+		}
+#else
 		if( Event.current.type == EventType.Repaint )
 		{
 			m_previewRenderUtility.BeginPreview( r, background );
 			m_renderMeshMethod.Invoke( m_modelInspectorType, new object[] { m_targetMesh, m_previewRenderUtility, mat, null, m_previewDir, -1 } );
 			m_previewRenderUtility.EndAndDrawPreview( r );
 		}
+#endif
 	}
 
 	public static MaterialEditor Instance { get { return m_instance; } set { m_instance = value; } }

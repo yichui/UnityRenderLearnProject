@@ -41,4 +41,4 @@ https://zhuanlan.zhihu.com/p/435005339
 https://github.com/sanagi/UnityGraphicTest/blob/dfc63cfb9c8f858472f9558452adcc9d382261fa/UnityChanSSU_URP-release-1.0.2/Assets/Shaders/URPGenToon.shader
 https://github.com/ashyukiha/GenshinCharacterShaderZhihuVer/blob/main/GenshinCharacterShaderZhihuVer.shader
 https://github.com/LeeJJason/LearnUnityShader
-https://github.com/unity3d-jp/UnityChanToonShaderVer2_Project
+https://github.com/unity3d-jp/UnityChanToonShaderVer2_Project	

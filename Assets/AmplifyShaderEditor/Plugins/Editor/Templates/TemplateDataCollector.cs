@@ -312,6 +312,14 @@ namespace AmplifyShaderEditor
 			m_fragmentInputParams.Add( semantic, new TemplateInputParameters( type, precision, name, semantic ) );
 		}
 
+		public void RegisterVertexInputParams( WirePortDataType type , PrecisionType precision , string name , TemplateSemantics semantic, string custom )
+		{
+			if( m_vertexInputParams == null )
+				m_vertexInputParams = new Dictionary<TemplateSemantics , TemplateInputParameters>();
+
+			m_vertexInputParams.Add( semantic , new TemplateInputParameters( type , precision , name , semantic, custom ) );
+		}
+
 		public void RegisterVertexInputParams( WirePortDataType type, PrecisionType precision, string name, TemplateSemantics semantic )
 		{
 			if( m_vertexInputParams == null )
@@ -365,10 +373,22 @@ namespace AmplifyShaderEditor
 			return m_fragmentInputParams[ TemplateSemantics.SV_PrimitiveID ].Name;
 		}
 #endif
+
+		public string GetURPMainLight( int uniqueId, string shadowCoords = null )
+		{
+			if( string.IsNullOrEmpty( shadowCoords ) )
+			{
+				shadowCoords = GetShadowCoords( uniqueId );
+			}
+			m_currentDataCollector.AddLocalVariable( uniqueId , string.Format( "Light ase_mainLight = GetMainLight( {0} );",shadowCoords) );
+
+			return "ase_mainLight";
+		}
+
 		public string GetVFace( int uniqueId )
 		{
 			#if UNITY_2018_3_OR_NEWER
-			if( IsHDRP && ASEPackageManagerHelper.CurrentHDVersion >= ASESRPVersions.ASE_SRP_6_9_0 )
+			if( IsSRP && ASEPackageManagerHelper.CurrentHDVersion >= ASESRPVersions.ASE_SRP_6_9_0 )
 			{
 				string result = string.Empty;
 				if( GetCustomInterpolatedData( TemplateInfoOnSematics.VFACE, WirePortDataType.FLOAT, PrecisionType.Float, ref result, true, MasterNodePortCategory.Fragment ) )
@@ -391,11 +411,43 @@ namespace AmplifyShaderEditor
 			else
 			#endif
 			{
+				m_currentDataCollector.AddFaceMacros();
+
+				//if( m_fragmentInputParams != null && m_fragmentInputParams.ContainsKey( TemplateSemantics.VFACE ) )
+				//	return m_fragmentInputParams[ TemplateSemantics.VFACE ].Name;
+
+				//RegisterFragInputParams( WirePortDataType.FLOAT, PrecisionType.Half, TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.VFACE ], TemplateSemantics.VFACE );
+				//return m_fragmentInputParams[ TemplateSemantics.VFACE ].Name;
 				if( m_fragmentInputParams != null && m_fragmentInputParams.ContainsKey( TemplateSemantics.VFACE ) )
 					return m_fragmentInputParams[ TemplateSemantics.VFACE ].Name;
 
-				RegisterFragInputParams( WirePortDataType.FLOAT, PrecisionType.Half, TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.VFACE ], TemplateSemantics.VFACE );
+				string custom = "FRONT_FACE_TYPE " + TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.VFACE ] + " : FRONT_FACE_SEMANTIC";
+				RegisterFragInputParams( WirePortDataType.FLOAT , PrecisionType.Half , TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.VFACE ] , TemplateSemantics.VFACE , custom );
 				return m_fragmentInputParams[ TemplateSemantics.VFACE ].Name;
+
+			}
+		}
+
+		public string GetSVInstanceId( ref MasterNodeDataCollector dataCollector )
+		{
+
+			if( dataCollector.IsFragmentCategory )
+			{
+				if( m_fragmentInputParams != null && m_fragmentInputParams.ContainsKey( TemplateSemantics.SV_InstanceID ) )
+					return m_fragmentInputParams[ TemplateSemantics.SV_InstanceID ].Name;
+
+				string custom = "uint " + TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.SV_InstanceID ] + " : SV_InstanceId";
+				RegisterFragInputParams( WirePortDataType.INT , PrecisionType.Half , TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.SV_InstanceID ] , TemplateSemantics.SV_InstanceID , custom );
+				return m_fragmentInputParams[ TemplateSemantics.SV_InstanceID ].Name;
+			}
+			else
+			{
+				if( m_vertexInputParams != null && m_vertexInputParams.ContainsKey( TemplateSemantics.SV_InstanceID ) )
+					return m_vertexInputParams[ TemplateSemantics.SV_InstanceID ].Name;
+
+				string custom = "uint " + TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.SV_InstanceID ] + " : SV_InstanceId";
+				RegisterVertexInputParams( WirePortDataType.INT, PrecisionType.Half , TemplateHelperFunctions.SemanticsDefaultName[ TemplateSemantics.SV_InstanceID ] , TemplateSemantics.SV_InstanceID, custom  );
+				return m_vertexInputParams[ TemplateSemantics.SV_InstanceID ].Name;
 			}
 		}
 
@@ -567,6 +619,7 @@ namespace AmplifyShaderEditor
 					case WirePortDataType.FLOAT3:
 					finalVarName += ".xyz";
 					break;
+					case WirePortDataType.UINT4:
 					case WirePortDataType.FLOAT4:
 					case WirePortDataType.COLOR:
 					case WirePortDataType.FLOAT3x3:
@@ -632,7 +685,10 @@ namespace AmplifyShaderEditor
 					string finalVarName = m_currentTemplateData.FragmentFunctionData.InVarName + "." + availableInterp.VarNameWithSwizzle;
 					m_availableFragData.Add( TemplateHelperFunctions.IntToUVChannelInfo[ UVChannel ], new InterpDataHelper( size, finalVarName ) );
 					if( size != originalSize )
-						finalVarName = m_currentTemplateData.FragmentFunctionData.InVarName + "." + availableInterp.VarName+ UIUtils.GetAutoSwizzle( originalSize );
+					{
+						//finalVarName = m_currentTemplateData.FragmentFunctionData.InVarName + "." + availableInterp.VarName + UIUtils.GetAutoSwizzle( originalSize );
+						finalVarName = m_availableFragData[ TemplateHelperFunctions.IntToUVChannelInfo[ UVChannel ] ].VarName  + UIUtils.GetAutoSwizzle( originalSize );
+					}
 					return finalVarName;
 				}
 			}
@@ -836,7 +892,7 @@ namespace AmplifyShaderEditor
 			return m_interpolatorData.HasRawInterpolatorOfName( name );
 		}
 
-		public TemplateVertexData RequestNewInterpolator( WirePortDataType dataType, bool isColor, string varName = null )
+		public TemplateVertexData RequestNewInterpolator( WirePortDataType dataType, bool isColor, string varName = null , bool noInterpolationFlag = false, bool sampleFlag = false )
 		{
 			if( varName != null && m_registeredVertexData.ContainsKey( varName ) )
 			{
@@ -845,8 +901,13 @@ namespace AmplifyShaderEditor
 
 			for( int i = 0; i < m_interpolatorData.AvailableInterpolators.Count; i++ )
 			{
-				if( !m_interpolatorData.AvailableInterpolators[ i ].IsFull )
+				if( !m_interpolatorData.AvailableInterpolators[ i ].IsFull	)
 				{
+					if( m_interpolatorData.AvailableInterpolators[ i ].Usage != 0 && 
+						(m_interpolatorData.AvailableInterpolators[ i ].NoInterpolation != noInterpolationFlag ||
+						m_interpolatorData.AvailableInterpolators[ i ].Sample != sampleFlag ))
+						continue;
+
 					TemplateVertexData data = m_interpolatorData.AvailableInterpolators[ i ].RequestChannels( dataType, isColor, varName );
 					if( data != null )
 					{
@@ -857,9 +918,17 @@ namespace AmplifyShaderEditor
 
 						if( m_interpolatorData.AvailableInterpolators[ i ].Usage == 1 )
 						{
+							m_interpolatorData.AvailableInterpolators[ i ].NoInterpolation = noInterpolationFlag;
+							m_interpolatorData.AvailableInterpolators[ i ].Sample = sampleFlag;
 							// First time using this interpolator, so we need to register it
 							string interpolator = string.Format( TemplateHelperFunctions.TexFullSemantic,
 																	data.VarName, data.Semantics );
+							if( noInterpolationFlag )
+								interpolator = "nointerpolation " + interpolator;
+
+							if( sampleFlag)
+								interpolator = "sample " + interpolator;
+
 							m_currentDataCollector.AddToInterpolators( interpolator );
 						}
 						return data;
@@ -1011,6 +1080,12 @@ namespace AmplifyShaderEditor
 			return false;
 		}
 
+		public WirePortDataType GetVertexPositionDataType()
+		{
+			InterpDataHelper info = GetInfo( TemplateInfoOnSematics.POSITION , false, MasterNodePortCategory.Vertex);
+			return info.VarType;
+		}
+
 		public string GetVertexPosition( WirePortDataType type, PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
 			if( HasInfo( TemplateInfoOnSematics.POSITION, useMasterNodeCategory, customCategory ) )
@@ -1148,7 +1223,40 @@ namespace AmplifyShaderEditor
 					return varName;
 			}
 		}
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		public string GetBlendWeights( bool useMasterNodeCategory = true , MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
+		{
+			if( HasInfo( TemplateInfoOnSematics.BLENDWEIGHTS , useMasterNodeCategory , customCategory ) )
+			{
+				InterpDataHelper info = GetInfo( TemplateInfoOnSematics.BLENDWEIGHTS , useMasterNodeCategory , customCategory );
+				return info.VarName;
+			}
+			else
+			{
+				MasterNodePortCategory category = useMasterNodeCategory ? m_currentDataCollector.PortCategory : customCategory;
+				string name = GeneratorUtils.VertexBlendWeightsStr;
+				string varName = RegisterInfoOnSemantic( category , TemplateInfoOnSematics.BLENDWEIGHTS , TemplateSemantics.BLENDWEIGHTS , name , WirePortDataType.FLOAT4 ,PrecisionType.Float , false , name );
+				return varName;
+			}
+		}
 
+		public string GetBlendIndices( bool useMasterNodeCategory = true , MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
+		{
+			if( HasInfo( TemplateInfoOnSematics.BLENDINDICES , useMasterNodeCategory , customCategory ) )
+			{
+				InterpDataHelper info = GetInfo( TemplateInfoOnSematics.BLENDINDICES , useMasterNodeCategory , customCategory );
+				return info.VarName;
+			}
+			else
+			{
+				MasterNodePortCategory category = useMasterNodeCategory ? m_currentDataCollector.PortCategory : customCategory;
+				string name = GeneratorUtils.VertexBlendIndicesStr;
+				string varName = RegisterInfoOnSemantic( category , TemplateInfoOnSematics.BLENDINDICES , TemplateSemantics.BLENDINDICES , name , WirePortDataType.UINT4 , PrecisionType.Float , false , name );
+				return varName;
+			}
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		public string GetVertexBitangent( PrecisionType precisionType, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
 		{
 			string varName = GeneratorUtils.VertexBitangentStr;
@@ -1793,7 +1901,8 @@ namespace AmplifyShaderEditor
 			return varName;
 		}
 
-		public void RegisterCustomInterpolatedData( string name, WirePortDataType dataType, PrecisionType precision, string vertexInstruction, bool useMasterNodeCategory = true, MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment )
+		public void RegisterCustomInterpolatedData( string name, WirePortDataType dataType, PrecisionType precision, string vertexInstruction, bool useMasterNodeCategory = true, 
+													MasterNodePortCategory customCategory = MasterNodePortCategory.Fragment, bool noInterpolationFlag = false, bool sampleFlag = false )
 		{
 			bool addLocalVariable = !name.Equals( vertexInstruction );
 
@@ -1816,7 +1925,7 @@ namespace AmplifyShaderEditor
 				if( !m_customInterpolatedData[ name ].IsFragment )
 				{
 					m_customInterpolatedData[ name ].IsFragment = true;
-					TemplateVertexData interpData = RequestNewInterpolator( dataType, false );
+					TemplateVertexData interpData = RequestNewInterpolator( dataType, false,null, noInterpolationFlag,sampleFlag );
 					if( interpData == null )
 					{
 						Debug.LogErrorFormat( "Could not assign interpolator of type {0} to variable {1}", dataType, name );

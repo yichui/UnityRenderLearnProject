@@ -267,10 +267,70 @@ namespace AmplifyShaderEditor
 					GenericMenu menu = new GenericMenu();
 					AddMenuItem( menu, Constants.DefaultCustomInspector );
 #if UNITY_2018_3_OR_NEWER
-					if( ASEPackageManagerHelper.CurrentHDVersion > ASESRPVersions.ASE_SRP_6_9_1 )
+					ASESRPVersions version = ASESRPVersions.ASE_SRP_RECENT;
+					bool foundHDRP = ASEPackageManagerHelper.FoundHDVersion;
+					bool foundURP = ASEPackageManagerHelper.FoundLWVersion;
+
+					if( foundHDRP && foundURP )
 					{
-						AddMenuItem( menu, "UnityEditor.Rendering.HighDefinition.HDLitGUI" );
-						AddMenuItem( menu, "UnityEditor.ShaderGraph.PBRMasterGUI" );
+						version = ( ASEPackageManagerHelper.CurrentHDVersion > ASEPackageManagerHelper.CurrentLWVersion ) ? ASEPackageManagerHelper.CurrentHDVersion : ASEPackageManagerHelper.CurrentLWVersion;
+					}
+					else if( foundHDRP )
+					{
+						version = ASEPackageManagerHelper.CurrentHDVersion;
+					}
+					else if( foundURP )
+					{
+						version = ASEPackageManagerHelper.CurrentLWVersion;
+					}
+
+					if( version > ASESRPVersions.ASE_SRP_6_9_1 )
+					{
+						if( foundHDRP )
+						{
+							if( version >= ASESRPVersions.ASE_SRP_11_0_0 )
+							{
+								AddMenuItem( menu , "Rendering.HighDefinition.DecalShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LightingShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LitShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.HDUnlitGUI" );
+							}
+							else
+							if( version >= ASESRPVersions.ASE_SRP_10_0_0 )
+							{
+								AddMenuItem( menu , "Rendering.HighDefinition.DecalGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LitShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LightingShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.HDUnlitGUI" );
+							}
+							else if( version >= ASESRPVersions.ASE_SRP_12_0_0 )
+							{
+								AddMenuItem( menu , "Rendering.HighDefinition.DecalGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LitShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.LightingShaderGraphGUI" );
+								AddMenuItem( menu , "Rendering.HighDefinition.HDUnlitGUI" );
+							}
+							else
+							{
+								AddMenuItem( menu , "UnityEditor.Rendering.HighDefinition.HDLitGUI" );
+							}
+						}
+
+						if( foundURP )
+						{
+							if( version >= ASESRPVersions.ASE_SRP_12_0_0 )
+							{
+								AddMenuItem( menu , "UnityEditor.ShaderGraphLitGUI" );
+								AddMenuItem( menu , "UnityEditor.ShaderGraphUnlitGUI" );
+								AddMenuItem( menu , "UnityEditor.Rendering.Universal.DecalShaderGraphGUI" );
+								AddMenuItem( menu , "UnityEditor.ShaderGraphLitGUI" );
+							}
+							else
+							{
+								AddMenuItem( menu , "UnityEditor.ShaderGraph.PBRMasterGUI" );
+							}
+						}
+						
 					}
 					else
 					{
@@ -561,6 +621,12 @@ namespace AmplifyShaderEditor
 			return null;
 		}
 
+		public void CheckSamplingMacrosFlag()
+		{
+			if( ContainerGraph.SamplingMacros && m_currentDataCollector != null )
+				m_currentDataCollector.AddToDirectives( Constants.SamplingMacrosDirective );
+
+		}
 		protected void SortInputPorts( ref List<InputPort> vertexPorts, ref List<InputPort> fragmentPorts )
 		{
 			for( int i = 0; i < m_inputPorts.Count; i++ )
@@ -609,6 +675,7 @@ namespace AmplifyShaderEditor
 				AssetDatabase.Refresh( ImportAssetOptions.ForceUpdate );
 				CurrentShader = Shader.Find( ShaderName );
 			}
+
 			//else
 			//{
 			//	// need to always get asset datapath because a user can change and asset location from the project window 
@@ -974,9 +1041,10 @@ namespace AmplifyShaderEditor
 				m_sizeIsDirty = true;
 			}
 		}
+		public string CurrentInspector { get { return m_customInspectorName; } }
 		public string CustomInspectorFormatted { get { return string.Format( CustomInspectorFormat, m_customInspectorName ); } }
 		public string CroppedShaderName { get { return m_croppedShaderName; } }
-		public AvailableShaderTypes CurrentMasterNodeCategory { get { return ( m_masterNodeCategory == 0 ) ? AvailableShaderTypes.SurfaceShader : AvailableShaderTypes.Template; } }
+		public virtual AvailableShaderTypes CurrentMasterNodeCategory { get { return ( m_masterNodeCategory == 0 ) ? AvailableShaderTypes.SurfaceShader : AvailableShaderTypes.Template; } }
 		public int CurrentMasterNodeCategoryIdx { get { return m_masterNodeCategory; } }
 		public MasterNodeDataCollector CurrentDataCollector { get { return m_currentDataCollector; } set { m_currentDataCollector = value; } }
 		public List<PropertyNode> PropertyNodesVisibleList { get { return m_propertyNodesVisibleList; } }
@@ -997,7 +1065,8 @@ namespace AmplifyShaderEditor
 			set
 			{
 				m_samplingMacros = value;
-				ContainerGraph.SamplingMacros = value;
+				if( IsLODMainMasterNode )
+					ContainerGraph.SamplingMacros = value;
 			}
 		}
 	}

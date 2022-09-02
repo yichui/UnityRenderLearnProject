@@ -27,8 +27,6 @@ namespace AmplifyShaderEditor
 	[Serializable]
 	public class ParentNode : UndoParentNode, ISerializationCallbackReceiver
 	{
-		public const int PreviewWidth = 128;
-		public const int PreviewHeight = 128;
 
 		protected readonly string[] PrecisionLabels = { "Float", "Half" };
 		protected readonly string[] PrecisionLabelsExtra = { "Float", "Half", "Inherit" };
@@ -1946,6 +1944,11 @@ namespace AmplifyShaderEditor
 		}
 
 		public bool DropdownEditing { get { return m_dropdownEditing; } set { m_dropdownEditing = value; PreviewIsDirty = true; } }
+		public void DisablePreview()
+		{
+			m_showPreview = false;
+			m_sizeIsDirty = true;
+		}
 		/// <summary>
 		/// Handles gui controls, runs before node layout
 		/// </summary>
@@ -2595,11 +2598,15 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-		public string GenerateInputInVertex( ref MasterNodeDataCollector dataCollector, int inputPortUniqueId, string varName, bool createInterpolator )
+		public string GenerateInputInVertex( ref MasterNodeDataCollector dataCollector , int inputPortUniqueId , string varName , bool createInterpolator , bool noInterpolationFlag = false , bool sampleFlag = false )
 		{
 			InputPort inputPort = GetInputPortByUniqueId( inputPortUniqueId );
-			if( !dataCollector.IsFragmentCategory)
-				return inputPort.GeneratePortInstructions( ref dataCollector );
+			if( !dataCollector.IsFragmentCategory )
+			{
+				string value = inputPort.GeneratePortInstructions( ref dataCollector );
+				dataCollector.AddLocalVariable( -1 , CurrentPrecisionType , inputPort.DataType , varName , value );
+				return varName;
+			}
 
 			//TEMPLATES
 			if( dataCollector.IsTemplate )
@@ -2626,7 +2633,7 @@ namespace AmplifyShaderEditor
 
 				if( createInterpolator )
 				{
-					dataCollector.TemplateDataCollectorInstance.RegisterCustomInterpolatedData( varName, inputPort.DataType, CurrentPrecisionType, data );
+					dataCollector.TemplateDataCollectorInstance.RegisterCustomInterpolatedData( varName, inputPort.DataType, CurrentPrecisionType, data,true,MasterNodePortCategory.Fragment,noInterpolationFlag,sampleFlag );
 				}
 				else
 				{
@@ -2721,7 +2728,7 @@ namespace AmplifyShaderEditor
 			}
 			else
 			{
-				dataCollector.AddToLocalVariables( m_uniqueId, localVar );
+				dataCollector.AddToFragmentLocalVariables( m_uniqueId, localVar );
 			}
 		}
 
@@ -3471,7 +3478,7 @@ namespace AmplifyShaderEditor
 				if( i == 0 )
 				{
 					RenderTexture temp = RenderTexture.active;
-					RenderTexture beforeMask = RenderTexture.GetTemporary( PreviewWidth, PreviewHeight, 0, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear );
+					RenderTexture beforeMask = RenderTexture.GetTemporary( Constants.PreviewSize , Constants.PreviewSize , 0, Constants.PreviewFormat , RenderTextureReadWrite.Linear );
 					RenderTexture.active = beforeMask;
 					Graphics.Blit( null, beforeMask, PreviewMaterial, m_previewMaterialPassId );
 
@@ -3507,21 +3514,27 @@ namespace AmplifyShaderEditor
 						m_outputPorts[ i ].MaskingMaterial.SetTexture( m_cachedMainTexId, beforeMask );
 					}
 					m_outputPorts[ i ].MaskingMaterial.SetVector( m_cachedPortsId, m_portMask );
-					RenderTexture.active = m_outputPorts[ i ].OutputPreviewTexture;
-					Graphics.Blit( null, m_outputPorts[ i ].OutputPreviewTexture, m_outputPorts[ i ].MaskingMaterial, 0 );
+					if( !Preferences.GlobalDisablePreviews )
+					{
+						RenderTexture.active = m_outputPorts[ i ].OutputPreviewTexture;
+						Graphics.Blit( null , m_outputPorts[ i ].OutputPreviewTexture , m_outputPorts[ i ].MaskingMaterial , 0 );
 
-					RenderTexture.ReleaseTemporary( beforeMask );
-					RenderTexture.active = temp;
+						RenderTexture.ReleaseTemporary( beforeMask );
+						RenderTexture.active = temp;
+					}
 				}
 				else
 				{
-					RenderTexture temp = RenderTexture.active;
-					m_outputPorts[ i ].MaskingMaterial.SetTexture( m_cachedMaskTexId, PreviewTexture );
-					m_outputPorts[ i ].MaskingMaterial.SetFloat( m_cachedPortId, i );
+					if( !Preferences.GlobalDisablePreviews )
+					{
+						RenderTexture temp = RenderTexture.active;
+						m_outputPorts[ i ].MaskingMaterial.SetTexture( m_cachedMaskTexId , PreviewTexture );
+						m_outputPorts[ i ].MaskingMaterial.SetFloat( m_cachedPortId , i );
 
-					RenderTexture.active = m_outputPorts[ i ].OutputPreviewTexture;
-					Graphics.Blit( null, m_outputPorts[ i ].OutputPreviewTexture, m_outputPorts[ i ].MaskingMaterial, 1 );
-					RenderTexture.active = temp;
+						RenderTexture.active = m_outputPorts[ i ].OutputPreviewTexture;
+						Graphics.Blit( null , m_outputPorts[ i ].OutputPreviewTexture , m_outputPorts[ i ].MaskingMaterial , 1 );
+						RenderTexture.active = temp;
+					}
 				}
 			}
 
@@ -3760,6 +3773,7 @@ namespace AmplifyShaderEditor
 			return TitleContent.text.IndexOf( text, StringComparison.CurrentCultureIgnoreCase ) >= 0;
 		}
 
+		public virtual ParentNode ExecuteStubCode(){ return this; }
 		public virtual float HeightEstimate
 		{
 			get
@@ -3782,5 +3796,6 @@ namespace AmplifyShaderEditor
 		public string TypeName { get { if( m_nodeAttribs != null ) return m_nodeAttribs.Name;return GetType().ToString(); } }
 		public bool PreviewIsDirty { set { m_previewIsDirty = value; } get { return m_previewIsDirty; } }
 		protected bool FinishPreviewRender { get { return m_finishPreviewRender; } set { m_finishPreviewRender = value; } }
+		public virtual bool IsStubNode { get { return false; } }
 	}
 }

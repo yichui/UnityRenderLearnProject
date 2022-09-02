@@ -16,7 +16,7 @@ namespace AmplifyShaderEditor
 	}
 
 	[Serializable]
-	[NodeAttributes( "Template Parameter", "Constants And Properties", "Select and use one of the pre-existing properties given by the template" )]
+	[NodeAttributes( "Template Parameter" , "Constants And Properties" , "Select and use one of the pre-existing properties given by the template" )]
 	public sealed class TemplateShaderPropertyNode : TemplateNodeParent
 	{
 		private const string CurrentScopeStr = "Scope";
@@ -59,16 +59,20 @@ namespace AmplifyShaderEditor
 		[SerializeField]
 		private ShaderPropertyScope m_currentScope = ShaderPropertyScope.Shader;
 
+		[SerializeField]
+		private bool m_advancedView = false;
+
 		protected override void CommonInit( int uniqueId )
 		{
 			base.CommonInit( uniqueId );
 			m_previewShaderGUID = "4feb2016be0ece148b8bf234508f6aa4";
+			m_autoWrapProperties = true;
 		}
 
 		void FetchScope()
 		{
 			int shaderScopeCount = m_templateMPData.AvailableShaderProperties.Count;
-			for( int i = 0; i < shaderScopeCount; i++ )
+			for( int i = 0 ; i < shaderScopeCount ; i++ )
 			{
 				if( m_templateMPData.AvailableShaderProperties[ i ].PropertyName.Equals( m_propertyName ) )
 				{
@@ -77,7 +81,7 @@ namespace AmplifyShaderEditor
 			}
 
 			int subShaderScopeCount = m_templateMPData.SubShaders[ SubShaderIdx ].AvailableShaderGlobals.Count;
-			for( int i = 0; i < subShaderScopeCount; i++ )
+			for( int i = 0 ; i < subShaderScopeCount ; i++ )
 			{
 				if( m_templateMPData.SubShaders[ SubShaderIdx ].AvailableShaderGlobals[ i ].PropertyName.Equals( m_propertyName ) )
 				{
@@ -86,7 +90,7 @@ namespace AmplifyShaderEditor
 			}
 
 			int passScopeCount = m_templateMPData.SubShaders[ SubShaderIdx ].Passes[ PassIdx ].AvailableShaderGlobals.Count;
-			for( int i = 0; i < passScopeCount; i++ )
+			for( int i = 0 ; i < passScopeCount ; i++ )
 			{
 				if( m_templateMPData.SubShaders[ SubShaderIdx ].Passes[ PassIdx ].AvailableShaderGlobals[ i ].PropertyName.Equals( m_propertyName ) )
 				{
@@ -102,17 +106,29 @@ namespace AmplifyShaderEditor
 
 			if( m_templateMPData != null )
 			{
-				switch( m_currentScope )
+				if( m_advancedView )
 				{
-					case ShaderPropertyScope.Shader:
-					m_shaderProperties = m_templateMPData.AvailableShaderProperties;
-					break;
-					case ShaderPropertyScope.SubShader:
-					m_shaderProperties = m_templateMPData.SubShaders[ SubShaderIdx ].AvailableShaderGlobals;
-					break;
-					case ShaderPropertyScope.Pass:
-					m_shaderProperties = m_templateMPData.SubShaders[ SubShaderIdx ].Passes[ PassIdx ].AvailableShaderGlobals;
-					break;
+					switch( m_currentScope )
+					{
+						case ShaderPropertyScope.Shader:
+						m_shaderProperties = m_templateMPData.AvailableShaderProperties;
+						break;
+						case ShaderPropertyScope.SubShader:
+						m_shaderProperties = m_templateMPData.SubShaders[ SubShaderIdx ].AvailableShaderGlobals;
+						break;
+						case ShaderPropertyScope.Pass:
+						m_shaderProperties = m_templateMPData.SubShaders[ SubShaderIdx ].Passes[ PassIdx ].AvailableShaderGlobals;
+						break;
+					}
+				}
+				else
+				{
+					m_shaderProperties = m_templateMPData.AllShaderProperties;
+
+					if( m_currentPropertyIdx < 0 && m_shaderProperties.Count > 0 )
+					{
+						m_currentPropertyIdx = 0;
+					}
 				}
 			}
 		}
@@ -131,7 +147,42 @@ namespace AmplifyShaderEditor
 		public override void DrawProperties()
 		{
 			base.DrawProperties();
-			if( m_multiPassMode )
+			if( m_containerGraph.CurrentCanvasMode != NodeAvailability.TemplateShader )
+			{
+				return;
+			}
+
+			EditorGUI.BeginChangeCheck();
+			m_advancedView = EditorGUILayoutToggle( "Advanced View" , m_advancedView );
+			if( EditorGUI.EndChangeCheck() )
+			{
+				if( m_advancedView )
+				{
+					if( m_shaderProperties[ m_currentPropertyIdx ].PassId >= 0 )
+					{
+						m_currentScope = ShaderPropertyScope.Pass;
+						PassIdx = m_shaderProperties[ m_currentPropertyIdx ].PassId;
+						SubShaderIdx = m_shaderProperties[ m_currentPropertyIdx ].SubShaderId;
+					}
+					else if( m_shaderProperties[ m_currentPropertyIdx ].SubShaderId >= 0 )
+					{
+						m_currentScope = ShaderPropertyScope.SubShader;
+						SubShaderIdx = m_shaderProperties[ m_currentPropertyIdx ].SubShaderId;
+						PassIdx = 0;
+					}
+					else
+					{
+						m_currentScope = ShaderPropertyScope.Shader;
+						SubShaderIdx = 0;
+						PassIdx = 0;
+					}
+				}
+
+				FetchShaderProperties();
+				FetchPropertyId();
+			}
+
+			if( m_advancedView && m_multiPassMode )
 			{
 				DrawMultipassProperties();
 			}
@@ -143,7 +194,7 @@ namespace AmplifyShaderEditor
 				if( hasProperties )
 				{
 					EditorGUI.BeginChangeCheck();
-					m_currentPropertyIdx = EditorGUILayoutPopup( PropertyLabelStr, m_currentPropertyIdx, m_propertyLabels );
+					m_currentPropertyIdx = EditorGUILayoutPopup( PropertyLabelStr , m_currentPropertyIdx , m_propertyLabels );
 					if( EditorGUI.EndChangeCheck() )
 					{
 						UpdateFromId();
@@ -155,12 +206,13 @@ namespace AmplifyShaderEditor
 					}
 				}
 			}
+
 		}
 
 		void DrawMultipassProperties()
 		{
 			EditorGUI.BeginChangeCheck();
-			m_currentScope = (ShaderPropertyScope)EditorGUILayoutEnumPopup( CurrentScopeStr, m_currentScope );
+			m_currentScope = (ShaderPropertyScope)EditorGUILayoutEnumPopup( CurrentScopeStr , m_currentScope );
 			if( EditorGUI.EndChangeCheck() )
 			{
 				FetchShaderProperties();
@@ -211,17 +263,17 @@ namespace AmplifyShaderEditor
 		{
 			if( m_containerGraph.CurrentCanvasMode != NodeAvailability.TemplateShader )
 			{
-				ShowTab( NodeMessageType.Error, ErrorMessageStr );
+				ShowTab( NodeMessageType.Error , ErrorMessageStr );
 			}
 			else
 			{
 				if( m_shaderProperties != null &&
-					m_shaderProperties.Count > 0 && 
+					m_shaderProperties.Count > 0 &&
 					m_shaderProperties.Count > m_currentPropertyIdx &&
 					m_shaderProperties[ m_currentPropertyIdx ].PropertyType == PropertyType.Global &&
 					m_showPreview )
 				{
-					ShowTab( NodeMessageType.Info, WarningStr );
+					ShowTab( NodeMessageType.Info , WarningStr );
 				}
 				else
 				{
@@ -235,13 +287,13 @@ namespace AmplifyShaderEditor
 			if( m_containerGraph.CurrentCanvasMode != NodeAvailability.TemplateShader )
 				return;
 
-			if( m_shaderProperties == null || m_currentPropertyIdx >= m_shaderProperties.Count )
+			if( m_shaderProperties == null || m_currentPropertyIdx >= m_shaderProperties.Count || m_currentPropertyIdx < 0 )
 				return;
 
 			if( m_shaderProperties[ m_currentPropertyIdx ].PropertyType == PropertyType.Global )
 			{
 				m_additionalContent.text = string.Empty;
-				PreviewMaterial.SetInt( IntPropertyId, 0 );
+				PreviewMaterial.SetInt( IntPropertyId , 0 );
 				return;
 			}
 
@@ -253,69 +305,69 @@ namespace AmplifyShaderEditor
 					case WirePortDataType.INT:
 					{
 						int value = currMat.GetInt( m_propertyNameId );
-						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, GenerateTitle( value ) ) );
-						PreviewMaterial.SetInt( IntPropertyId, value );
+						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , GenerateTitle( value ) ) );
+						PreviewMaterial.SetInt( IntPropertyId , value );
 					}
 					break;
 					case WirePortDataType.FLOAT:
 					{
 						float value = currMat.GetFloat( m_propertyNameId );
-						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, GenerateTitle( value ) ) );
-						PreviewMaterial.SetFloat( FloatPropertyId, value );
+						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , GenerateTitle( value ) ) );
+						PreviewMaterial.SetFloat( FloatPropertyId , value );
 					}
 					break;
 					case WirePortDataType.FLOAT4:
 					{
 						Vector4 value = currMat.GetVector( m_propertyNameId );
-						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, GenerateTitle( value.x, value.y, value.z, value.w ) ) );
-						PreviewMaterial.SetVector( VectorPropertyId, value );
+						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , GenerateTitle( value.x , value.y , value.z , value.w ) ) );
+						PreviewMaterial.SetVector( VectorPropertyId , value );
 					}
 					break;
 					case WirePortDataType.COLOR:
 					{
 						Color value = currMat.GetColor( m_propertyNameId );
-						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, GenerateTitle( value.r, value.g, value.b, value.a ) ) );
-						PreviewMaterial.SetColor( VectorPropertyId, value );
+						SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , GenerateTitle( value.r , value.g , value.b , value.a ) ) );
+						PreviewMaterial.SetColor( VectorPropertyId , value );
 					}
 					break;
 					case WirePortDataType.SAMPLER2D:
 					{
 						Texture value = currMat.GetTexture( m_propertyNameId );
 						if( value )
-							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, value.name ) );
+							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , value.name ) );
 						else
 							SetAdditonalTitleText( string.Empty );
-						PreviewMaterial.SetTexture( Sampler2DPropertyId, value );
+						PreviewMaterial.SetTexture( Sampler2DPropertyId , value );
 					}
 					break;
 					case WirePortDataType.SAMPLER3D:
 					{
 						Texture value = currMat.GetTexture( m_propertyNameId );
 						if( value )
-							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, value.name ) );
+							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , value.name ) );
 						else
 							SetAdditonalTitleText( string.Empty );
-						PreviewMaterial.SetTexture( Sampler3DPropertyId, value );
+						PreviewMaterial.SetTexture( Sampler3DPropertyId , value );
 					}
 					break;
 					case WirePortDataType.SAMPLERCUBE:
 					{
 						Texture value = currMat.GetTexture( m_propertyNameId );
 						if( value )
-							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, value.name ) );
+							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , value.name ) );
 						else
 							SetAdditonalTitleText( string.Empty );
-						PreviewMaterial.SetTexture( SamplerCubePropertyId, value );
+						PreviewMaterial.SetTexture( SamplerCubePropertyId , value );
 					}
 					break;
 					case WirePortDataType.SAMPLER2DARRAY:
 					{
 						Texture value = currMat.GetTexture( m_propertyNameId );
 						if( value )
-							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr, value.name ) );
+							SetAdditonalTitleText( string.Format( Constants.SubTitleValueFormatStr , value.name ) );
 						else
 							SetAdditonalTitleText( string.Empty );
-						PreviewMaterial.SetTexture( SamplerCubePropertyId, value );
+						PreviewMaterial.SetTexture( SamplerCubePropertyId , value );
 					}
 					break;
 				}
@@ -332,7 +384,7 @@ namespace AmplifyShaderEditor
 			{
 				if( !m_showErrorMessage || m_errorMessageTypeIsError == NodeMessageType.Info )
 				{
-					ShowTab( NodeMessageType.Error, ErrorMessageStr );
+					ShowTab( NodeMessageType.Error , ErrorMessageStr );
 				}
 			}
 			else if( m_showErrorMessage )
@@ -373,7 +425,7 @@ namespace AmplifyShaderEditor
 			if( m_currentPropertyIdx > -1 )
 			{
 				EditorGUI.BeginChangeCheck();
-				m_currentPropertyIdx = m_upperLeftWidgetHelper.DrawWidget( this, m_currentPropertyIdx, m_propertyLabels );
+				m_currentPropertyIdx = m_upperLeftWidgetHelper.DrawWidget( this , m_currentPropertyIdx , m_propertyLabels );
 				if( EditorGUI.EndChangeCheck() )
 				{
 					UpdateFromId();
@@ -387,7 +439,7 @@ namespace AmplifyShaderEditor
 			{
 				m_currentPropertyIdx = 0;
 				m_propertyLabels = new string[ m_shaderProperties.Count ];
-				for( int i = 0; i < m_shaderProperties.Count; i++ )
+				for( int i = 0 ; i < m_shaderProperties.Count ; i++ )
 				{
 					if( m_shaderProperties[ i ].PropertyName.Equals( m_propertyName ) )
 					{
@@ -410,23 +462,23 @@ namespace AmplifyShaderEditor
 			{
 				if( m_shaderProperties.Count == 0 )
 				{
-					for( int i = 0; i < 4; i++ )
-						m_containerGraph.DeleteConnection( false, UniqueId, i, false, true );
+					for( int i = 0 ; i < 4 ; i++ )
+						m_containerGraph.DeleteConnection( false , UniqueId , i , false , true );
 
 					m_headerColor = UIUtils.GetColorFromCategory( "Default" );
 					m_content.text = "None";
 					m_additionalContent.text = string.Empty;
 					m_previewMaterialPassId = 1;
-					PreviewMaterial.SetFloat( FloatPropertyId, 0 );
+					PreviewMaterial.SetFloat( FloatPropertyId , 0 );
 					m_showPreview = false;
 					m_drawPreviewExpander = false;
-					m_outputPorts[ 0 ].ChangeProperties( "None", WirePortDataType.FLOAT, false );
+					m_outputPorts[ 0 ].ChangeProperties( "None" , WirePortDataType.FLOAT , false );
 					ConfigurePorts();
 					return;
 				}
 
 				m_drawPreviewExpander = true;
-				bool areCompatible = TemplateHelperFunctions.CheckIfCompatibles( m_outputPorts[ 0 ].DataType, m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType );
+				bool areCompatible = TemplateHelperFunctions.CheckIfCompatibles( m_outputPorts[ 0 ].DataType , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType );
 				switch( m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType )
 				{
 					case WirePortDataType.SAMPLER1D:
@@ -434,35 +486,35 @@ namespace AmplifyShaderEditor
 					case WirePortDataType.SAMPLER3D:
 					case WirePortDataType.SAMPLERCUBE:
 					case WirePortDataType.SAMPLER2DARRAY:
-					m_outputPorts[ 0 ].ChangeProperties( "Tex", m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType, false );
+					m_outputPorts[ 0 ].ChangeProperties( "Tex" , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType , false );
 					m_headerColor = UIUtils.GetColorFromCategory( "Textures" );
 					break;
 					case WirePortDataType.INT:
 					case WirePortDataType.FLOAT:
-					m_outputPorts[ 0 ].ChangeProperties( Constants.EmptyPortValue, m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType, false );
+					m_outputPorts[ 0 ].ChangeProperties( Constants.EmptyPortValue , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType , false );
 					m_headerColor = UIUtils.GetColorFromCategory( "Constants And Properties" );
 					break;
 					case WirePortDataType.FLOAT4:
-					m_outputPorts[ 0 ].ChangeProperties( "XYZW", m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType, false );
+					m_outputPorts[ 0 ].ChangeProperties( "XYZW" , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType , false );
 					m_headerColor = UIUtils.GetColorFromCategory( "Constants And Properties" );
 					break;
 					case WirePortDataType.COLOR:
-					m_outputPorts[ 0 ].ChangeProperties( "RGBA", m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType, false );
+					m_outputPorts[ 0 ].ChangeProperties( "RGBA" , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType , false );
 					m_headerColor = UIUtils.GetColorFromCategory( "Constants And Properties" );
 					break;
 					default:
 					case WirePortDataType.OBJECT:
 					case WirePortDataType.FLOAT3x3:
 					case WirePortDataType.FLOAT4x4:
-					m_outputPorts[ 0 ].ChangeProperties( "Out", m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType, false );
+					m_outputPorts[ 0 ].ChangeProperties( "Out" , m_shaderProperties[ m_currentPropertyIdx ].PropertyDataType , false );
 					m_headerColor = UIUtils.GetColorFromCategory( "Constants And Properties" );
 					break;
 				}
 
 				if( !areCompatible )
 				{
-					for( int i = 0; i < 4; i++ )
-						m_containerGraph.DeleteConnection( false, UniqueId, i, false, true );
+					for( int i = 0 ; i < 4 ; i++ )
+						m_containerGraph.DeleteConnection( false , UniqueId , i , false , true );
 				}
 
 				ConfigurePorts();
@@ -485,7 +537,7 @@ namespace AmplifyShaderEditor
 						m_previewMaterialPassId = 0;
 						if( !m_showErrorMessage && m_showPreview )
 						{
-							ShowTab( NodeMessageType.Info, WarningStr );
+							ShowTab( NodeMessageType.Info , WarningStr );
 						}
 					}
 					else
@@ -522,7 +574,7 @@ namespace AmplifyShaderEditor
 			}
 			else
 			{
-				for( int i = 0; i < values.Length; i++ )
+				for( int i = 0 ; i < values.Length ; i++ )
 				{
 					finalResult += values[ i ].ToString( Mathf.Abs( values[ i ] ) > 1000 ? Constants.PropertyBigVectorFormatLabel : Constants.PropertyVectorFormatLabel );
 					if( i < ( values.Length - 1 ) )
@@ -533,17 +585,17 @@ namespace AmplifyShaderEditor
 			return finalResult;
 		}
 
-		public override string GenerateShaderForOutput( int outputId, ref MasterNodeDataCollector dataCollector, bool ignoreLocalvar )
+		public override string GenerateShaderForOutput( int outputId , ref MasterNodeDataCollector dataCollector , bool ignoreLocalvar )
 		{
 			if( dataCollector.MasterNodeCategory != AvailableShaderTypes.Template )
 			{
-				UIUtils.ShowMessage( UniqueId, "Template Parameter node is only intended for templates use only" );
+				UIUtils.ShowMessage( UniqueId , "Template Parameter node is only intended for templates use only" , MessageSeverity.Error );
 				return m_outputPorts[ outputId ].ErrorValue;
 			}
 
-			if( m_shaderProperties == null || m_shaderProperties.Count ==0  )
+			if( m_shaderProperties == null || m_shaderProperties.Count == 0 )
 			{
-				UIUtils.ShowMessage( UniqueId, "Attempting to fetch inexistant parameter on " + m_nodeAttribs.Name +" node");
+				UIUtils.ShowMessage( UniqueId , "Attempting to fetch inexistant parameter on " + m_nodeAttribs.Name + " node" , MessageSeverity.Error );
 				return m_outputPorts[ outputId ].ErrorValue;
 			}
 
@@ -555,7 +607,7 @@ namespace AmplifyShaderEditor
 					{
 						if( dataCollector.TemplateDataCollectorInstance.MultipassSubshaderIdx != SubShaderIdx )
 						{
-							UIUtils.ShowMessage( UniqueId, string.Format( "{0} is only intended for subshader {1}", m_propertyLabels[ m_currentPropertyIdx ], SubShaderIdx ) );
+							UIUtils.ShowMessage( UniqueId , string.Format( "{0} is only intended for subshader {1}" , m_propertyLabels[ m_currentPropertyIdx ] , SubShaderIdx ) );
 							return m_outputPorts[ outputId ].ErrorValue;
 						}
 					}
@@ -566,7 +618,7 @@ namespace AmplifyShaderEditor
 							dataCollector.TemplateDataCollectorInstance.MultipassPassIdx != PassIdx
 							)
 						{
-							UIUtils.ShowMessage( UniqueId, string.Format( "{0} is only intended for subshader {1} and pass {2}", m_propertyLabels[ m_currentPropertyIdx ], SubShaderIdx, PassIdx ) );
+							UIUtils.ShowMessage( UniqueId , string.Format( "{0} is only intended for subshader {1} and pass {2}" , m_propertyLabels[ m_currentPropertyIdx ] , SubShaderIdx , PassIdx ) );
 							return m_outputPorts[ outputId ].ErrorValue;
 						}
 					}
@@ -574,7 +626,7 @@ namespace AmplifyShaderEditor
 				}
 			}
 
-			return GetOutputVectorItem( 0, outputId, m_propertyName );
+			return GetOutputVectorItem( 0 , outputId , m_propertyName );
 		}
 
 		public override void ReadFromString( ref string[] nodeParams )
@@ -584,20 +636,27 @@ namespace AmplifyShaderEditor
 			m_propertyNameId = Shader.PropertyToID( m_propertyName );
 			if( UIUtils.CurrentShaderVersion() > TemplatesManager.MPShaderVersion )
 			{
-				m_currentScope = (ShaderPropertyScope)Enum.Parse( typeof( ShaderPropertyScope ), GetCurrentParam( ref nodeParams ) );
+				m_currentScope = (ShaderPropertyScope)Enum.Parse( typeof( ShaderPropertyScope ) , GetCurrentParam( ref nodeParams ) );
 			}
 			else
 			{
 				m_fetchScopeFromProperty = true;
 			}
 			m_fetchPropertyId = true;
+
+			if( UIUtils.CurrentShaderVersion() > 18502 )
+			{
+				m_advancedView = Convert.ToBoolean( GetCurrentParam( ref nodeParams ) );
+			}
 		}
 
-		public override void WriteToString( ref string nodeInfo, ref string connectionsInfo )
+		public override void WriteToString( ref string nodeInfo , ref string connectionsInfo )
 		{
-			base.WriteToString( ref nodeInfo, ref connectionsInfo );
-			IOUtils.AddFieldValueToString( ref nodeInfo, m_propertyName );
-			IOUtils.AddFieldValueToString( ref nodeInfo, m_currentScope );
+			base.WriteToString( ref nodeInfo , ref connectionsInfo );
+			IOUtils.AddFieldValueToString( ref nodeInfo , m_propertyName );
+			IOUtils.AddFieldValueToString( ref nodeInfo , m_currentScope );
+			IOUtils.AddFieldValueToString( ref nodeInfo , m_advancedView );
+
 		}
 
 		public override void OnMasterNodeReplaced( MasterNode newMasterNode )

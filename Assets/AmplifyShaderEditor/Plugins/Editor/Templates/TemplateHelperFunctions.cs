@@ -47,7 +47,10 @@ namespace AmplifyShaderEditor
 		SV_PrimitiveID,
 		SV_InstanceID,
 		INTERNALTESSPOS,
-		INSTANCEID_SEMANTIC
+		INSTANCEID_SEMANTIC,
+		BLENDWEIGHTS,
+		BLENDINDICES
+
 	}
 
 	public enum TemplateInfoOnSematics
@@ -78,7 +81,9 @@ namespace AmplifyShaderEditor
 		OTHER,
 		VFACE,
 		SHADOWCOORDS,
-		VERTEXID
+		VERTEXID,
+		BLENDWEIGHTS,
+		BLENDINDICES
 	}
 
 	public enum TemplateShaderPropertiesIdx
@@ -553,6 +558,7 @@ namespace AmplifyShaderEditor
 			{WirePortDataType.COLOR,4 },
 			{WirePortDataType.INT,1 },
 			{WirePortDataType.UINT,1 },
+			{WirePortDataType.UINT4,4 },
 			{WirePortDataType.SAMPLER1D,0 },
 			{WirePortDataType.SAMPLER2D,0 },
 			{WirePortDataType.SAMPLER3D,0 },
@@ -578,6 +584,7 @@ namespace AmplifyShaderEditor
 			{TemplateSemantics.TANGENT			,"ase_tangent"},
 			{TemplateSemantics.VFACE			,"ase_vface"},
 			{TemplateSemantics.SV_VertexID		,"ase_vertexId"},
+			{TemplateSemantics.SV_InstanceID    ,"ase_instanceId"},
 			{TemplateSemantics.SV_PrimitiveID   ,"ase_primitiveId"},
 			{TemplateSemantics.INTERNALTESSPOS  ,"ase_internalTessPos"},
 			{TemplateSemantics.TEXCOORD0		,"ase_tex_coord0"},
@@ -887,6 +894,10 @@ namespace AmplifyShaderEditor
 		public static string CoreColorLib = "CoreRP/ShaderLibrary/Color.hlsl";
 #endif
 
+		public static string PragmaOnlyRendersPattern = @"#pragma\s+only_renderers\s+([\w .]*)";
+		public static string PragmaExcludeRendersPattern = @"#pragma\s+exclude_renderers\s+([\w .]*)";
+		public static string PragmaRendererElement = @"(\w+)";
+
 		public static string FetchSubShaderBody = @"(SubShader.*)\/\*ase_lod\*\/";
 		public static string TemplateCustomUI = @"\/\*CustomNodeUI:(\w*)\*\/";
 		public static string HidePassPattern = @"\/\*ase_hide_pass[:]*([a-zA-Z:]*)\*\/";
@@ -1100,7 +1111,7 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-		public static void CreateShaderPropertiesList( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper )
+		public static void CreateShaderPropertiesList( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper, int subShaderId, int passId)
 		{
 			int identationIdx = (int)TemplateShaderPropertiesIdx.Identation;
 			int nameIdx = (int)TemplateShaderPropertiesIdx.Name;
@@ -1119,7 +1130,9 @@ namespace AmplifyShaderEditor
 																								match.Groups[ inspectorNameIdx ].Value,
 																								match.Groups[ nameIdx ].Value,
 																								PropertyToWireType[ match.Groups[ typeIdx ].Value ],
-																								PropertyType.Property );
+																								PropertyType.Property,
+																								subShaderId,
+																								passId);
 						propertiesList.Add( newData );
 						duplicatesHelper.Add( newData.PropertyName, newData );
 					}	
@@ -1127,7 +1140,7 @@ namespace AmplifyShaderEditor
 			}
 		}
 		public const string DepthMacroDeclRegex = @"UNITY_DECLARE_DEPTH_TEXTURE\(\s*_CameraDepthTexture";
-		public static void CheckUnityBuiltinGlobalMacros( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper )
+		public static void CheckUnityBuiltinGlobalMacros( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper, int subShaderId, int passId )
 		{
 			Match match = Regex.Match( propertyData, DepthMacroDeclRegex );
 			if( match.Success )
@@ -1139,13 +1152,15 @@ namespace AmplifyShaderEditor
 																							Constants.CameraDepthTextureValue,
 																							WirePortDataType.SAMPLER2D,
 																							PropertyType.Global,
+																							subShaderId,
+																							passId,
 																							true );
 				duplicatesHelper.Add( newData.PropertyName, newData );
 				propertiesList.Add( newData );
 			}
 		}
 
-		public static void CreateShaderGlobalsList( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper )
+		public static void CreateShaderGlobalsList( string propertyData, ref List<TemplateShaderPropertyData> propertiesList, ref Dictionary<string, TemplateShaderPropertyData> duplicatesHelper,int subShaderId, int passId )
 		{
 			int typeIdx = (int)TemplateShaderGlobalsIdx.Type;
 			int nameIdx = (int)TemplateShaderGlobalsIdx.Name;
@@ -1166,7 +1181,9 @@ namespace AmplifyShaderEditor
 																								string.Empty,
 																								lineMatch.Groups[ nameIdx ].Value,
 																								CgToWirePortType[ lineMatch.Groups[ typeIdx ].Value ],
-																								PropertyType.Global );
+																								PropertyType.Global,
+																								subShaderId,
+																								passId);
 						duplicatesHelper.Add( newData.PropertyName, newData );
 						propertiesList.Add( newData );
 					}
@@ -1914,6 +1931,11 @@ namespace AmplifyShaderEditor
 
 			if( vertexData.Contains( Constants.InstanceIdMacro ) )
 			{
+				if( vertexDataList == null )
+				{
+					vertexDataList = new List<TemplateVertexData>();
+					vertexDataDict = new Dictionary<TemplateSemantics , TemplateVertexData>();
+				}
 				TemplateVertexData templateVertexData = new TemplateVertexData( TemplateSemantics.SV_InstanceID, WirePortDataType.UINT, Constants.InstanceIdVariable );
 				templateVertexData.DataInfo = TemplateInfoOnSematics.INSTANCE_ID;
 				templateVertexData.Available = true;
@@ -2476,6 +2498,59 @@ namespace AmplifyShaderEditor
 			}
 
 			return string.Empty;
+		}
+
+		public static void FillRenderingPlatform( TemplateRenderPlatformHelper renderPlatforms , string shaderBody )
+		{
+			int tagIndex = shaderBody.IndexOf( TemplatesManager.TemplateRenderPlatformsTag );
+			if(  tagIndex > -1 )
+			{
+				renderPlatforms.InitByTag( tagIndex );
+			}
+			else
+			{
+				//Excluded
+				Match excludePlatformsMatch = Regex.Match( shaderBody , PragmaExcludeRendersPattern );
+				if( excludePlatformsMatch.Success )
+				{
+					renderPlatforms.InitByExcludeRenders( excludePlatformsMatch.Index, excludePlatformsMatch.Value );
+					MatchCollection platformElements = Regex.Matches( excludePlatformsMatch.Groups[ 1 ].Value , PragmaRendererElement );
+					try
+					{
+						for( int i = 0 ; i < platformElements.Count ; i++ )
+						{
+							if( platformElements[ i ].Success )
+								renderPlatforms.SetupPlatform( platformElements[ i ].Groups[ 1 ].Value , false );
+						}
+					}
+					catch( Exception e )
+					{
+						Debug.LogException( e );
+					}
+				}
+				else //Only Renders
+				{
+					Match onlyRendersPlatformsMatch = Regex.Match( shaderBody , PragmaOnlyRendersPattern );
+					if( onlyRendersPlatformsMatch.Success )
+					{
+						renderPlatforms.InitByOnlyRenders( onlyRendersPlatformsMatch.Index, onlyRendersPlatformsMatch.Value );
+						MatchCollection platformElements = Regex.Matches( onlyRendersPlatformsMatch.Groups[ 1 ].Value , PragmaRendererElement );
+						try
+						{
+							for( int i = 0 ; i < platformElements.Count ; i++ )
+							{
+								if( platformElements[ i ].Success )
+									renderPlatforms.SetupPlatform( platformElements[ i ].Groups[ 1 ].Value, true );
+							}
+						}
+						catch( Exception e )
+						{
+							Debug.LogException( e );
+						}
+					}
+				}
+
+			}
 		}
 	}
 }

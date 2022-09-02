@@ -101,19 +101,42 @@ namespace AmplifyShaderEditor
 			}
 		}
 
-		public override void OnNodeLogicUpdate( DrawInfo drawInfo )
+		public override void OnInputPortConnected( int portId , int otherNodeId , int otherPortId , bool activateNode = true )
 		{
-			base.OnNodeLogicUpdate( drawInfo );
-
-			if( m_gradPort.IsConnected )
-			{
+			if( portId == 0 )
 				m_gradientNode = RecursiveBackCheck( m_gradPort.GetOutputNode( 0 ) );
-			}
-			else
+
+			base.OnInputPortConnected( portId , otherNodeId , otherPortId , activateNode );
+		}
+
+		public override void OnInputPortDisconnected( int portId )
+		{
+			if( portId == 0 )
 			{
 				m_gradientNode = null;
 			}
+
+			base.OnInputPortDisconnected( portId );
 		}
+
+
+		//public override void OnNodeLogicUpdate( DrawInfo drawInfo )
+		//{
+		//	base.OnNodeLogicUpdate( drawInfo );
+
+		//	if( m_gradPort.IsConnected )
+		//	{
+		//		if( m_gradientNode == null )
+		//		{
+		//			m_gradientNode = RecursiveBackCheck( m_gradPort.GetOutputNode( 0 ) );
+		//			PreviewIsDirty = true;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		m_gradientNode = null;
+		//	}
+		//}
 
 		GradientNode RecursiveBackCheck( ParentNode node )
 		{
@@ -161,6 +184,7 @@ namespace AmplifyShaderEditor
 			string gradient = "(Gradient)0";
 			if( m_inputPorts[ 0 ].IsConnected && m_gradientNode != null )
 				gradient = m_inputPorts[ 0 ].GeneratePortInstructions( ref dataCollector );
+
 			string time = m_inputPorts[ 1 ].GeneratePortInstructions( ref dataCollector );
 
 			string functionResult =	dataCollector.AddFunctions( m_functionHeader, m_functionBody, gradient, time );
@@ -176,9 +200,9 @@ namespace AmplifyShaderEditor
 			IOUtils.AddFunctionLine( ref m_functionBody, "for (int c = 1; c < 8; c++)" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "{" );
 			if( isSrp )
-				IOUtils.AddFunctionLine( ref m_functionBody, "float colorPos = saturate((time - gradient.colors[c-1].w) / (gradient.colors[c].w - gradient.colors[c-1].w)) * step(c, gradient.colorsLength-1);" );
+				IOUtils.AddFunctionLine( ref m_functionBody, "float colorPos = saturate((time - gradient.colors[c-1].w) / ( 0.00001 + (gradient.colors[c].w - gradient.colors[c-1].w)) * step(c, gradient.colorsLength-1));" );
 			else
-				IOUtils.AddFunctionLine( ref m_functionBody, "float colorPos = saturate((time - gradient.colors[c-1].w) / (gradient.colors[c].w - gradient.colors[c-1].w)) * step(c, (float)gradient.colorsLength-1);" );
+				IOUtils.AddFunctionLine( ref m_functionBody, "float colorPos = saturate((time - gradient.colors[c-1].w) / ( 0.00001 + (gradient.colors[c].w - gradient.colors[c-1].w)) * step(c, (float)gradient.colorsLength-1));" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "color = lerp(color, gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), gradient.type));" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "}" );
 
@@ -194,9 +218,9 @@ namespace AmplifyShaderEditor
 			IOUtils.AddFunctionLine( ref m_functionBody, "for (int a = 1; a < 8; a++)" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "{" );
 			if( isSrp )
-				IOUtils.AddFunctionLine( ref m_functionBody, "float alphaPos = saturate((time - gradient.alphas[a-1].y) / (gradient.alphas[a].y - gradient.alphas[a-1].y)) * step(a, gradient.alphasLength-1);" );
+				IOUtils.AddFunctionLine( ref m_functionBody, "float alphaPos = saturate((time - gradient.alphas[a-1].y) / ( 0.00001 + (gradient.alphas[a].y - gradient.alphas[a-1].y)) * step(a, gradient.alphasLength-1));" );
 			else
-				IOUtils.AddFunctionLine( ref m_functionBody, "float alphaPos = saturate((time - gradient.alphas[a-1].y) / (gradient.alphas[a].y - gradient.alphas[a-1].y)) * step(a, (float)gradient.alphasLength-1);" );
+				IOUtils.AddFunctionLine( ref m_functionBody, "float alphaPos = saturate((time - gradient.alphas[a-1].y) / ( 0.00001 + (gradient.alphas[a].y - gradient.alphas[a-1].y)) * step(a, (float)gradient.alphasLength-1));" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "alpha = lerp(alpha, gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), gradient.type));" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "}" );
 			IOUtils.AddFunctionLine( ref m_functionBody, "return float4(color, alpha);" );

@@ -232,7 +232,7 @@ namespace AmplifyShaderEditor
 			try
 			{
 				body = IOUtils.LoadTextFileFromDisk( datapath );
-				body = body.Replace( "\r\n", "\n" );
+				body = UIUtils.ForceLFLineEnding( body );
 			}
 			catch( Exception e )
 			{
@@ -250,7 +250,7 @@ namespace AmplifyShaderEditor
 		void LoadTemplateBody( string body )
 		{
 
-			m_templateBody = body.Replace( "\r\n", "\n" ); ;
+			m_templateBody = UIUtils.ForceLFLineEnding( body ) ;
 
 			if( m_templateBody.IndexOf( TemplatesManager.TemplateShaderNameBeginTag ) < 0 )
 			{
@@ -567,13 +567,13 @@ namespace AmplifyShaderEditor
 							// Properties
 							case TemplateCommonTagId.Property:
 							{
-								TemplateHelperFunctions.CreateShaderPropertiesList( m_templateBody.Substring( 0, idx + TemplatesManager.CommonTags[ i ].Id.Length ), ref m_availableShaderProperties, ref duplicatesHelper );
+								TemplateHelperFunctions.CreateShaderPropertiesList( m_templateBody.Substring( 0, idx + TemplatesManager.CommonTags[ i ].Id.Length ), ref m_availableShaderProperties, ref duplicatesHelper,-1,-1 );
 							}
 							break;
 							// Globals
 							case TemplateCommonTagId.Global:
 							{
-								TemplateHelperFunctions.CreateShaderGlobalsList( m_templateBody.Substring( 0, idx + TemplatesManager.CommonTags[ i ].Id.Length ), ref m_availableShaderProperties, ref duplicatesHelper );
+								TemplateHelperFunctions.CreateShaderGlobalsList( m_templateBody.Substring( 0, idx + TemplatesManager.CommonTags[ i ].Id.Length ), ref m_availableShaderProperties, ref duplicatesHelper,-1,-1 );
 							}
 							break;
 

@@ -10,7 +10,7 @@ namespace AmplifyShaderEditor
 	public sealed class WorldReflectionVector : ParentNode
 	{
 		private const string ReflectionVecValStr = "newWorldReflection";
-		private const string ReflectionVecDecStr = "float3 {0} = {1};";
+		private const string ReflectionVecDecStr = "{0} {1} = {2};";
 
 		private const string NormalizeOptionStr = "Normalize";
 		private const string NormalizeFunc = "normalize( {0} )";
@@ -164,7 +164,9 @@ namespace AmplifyShaderEditor
 
 					if( connCount > 1 )
 					{
-						dataCollector.AddToLocalVariables( UniqueId, string.Format( ReflectionVecDecStr, ReflectionVecValStr + OutputId, result ) );
+						string precisionType = UIUtils.PrecisionWirePortToCgType( UIUtils.CurrentWindow.CurrentGraph.CurrentPrecision, WirePortDataType.FLOAT3 );
+
+						dataCollector.AddToFragmentLocalVariables( UniqueId, string.Format( ReflectionVecDecStr, precisionType, ReflectionVecValStr + OutputId, result ) );
 						RegisterLocalVariable( 0, result, ref dataCollector, ReflectionVecValStr + OutputId );
 						return GetOutputVectorItem( 0, outputId, m_outputPorts[ 0 ].LocalValue( dataCollector.PortCategory ) );
 					}

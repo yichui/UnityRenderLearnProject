@@ -791,7 +791,7 @@ namespace AmplifyShaderEditor
 					m_functionGraph.AllNodes[ i ].OnNodeLogicUpdate( drawInfo );
 				}
 
-				if( !string.IsNullOrEmpty( FunctionGraph.CurrentFunctionOutput.SubTitle ) )
+				//if( !string.IsNullOrEmpty( FunctionGraph.CurrentFunctionOutput.SubTitle ) )
 				{
 					SetAdditonalTitleText( FunctionGraph.CurrentFunctionOutput.SubTitle );
 				}

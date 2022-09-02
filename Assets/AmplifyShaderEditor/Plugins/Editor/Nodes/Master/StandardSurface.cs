@@ -91,11 +91,15 @@ namespace AmplifyShaderEditor
 		d3d11_9x,
 		xbox360,
 		xboxone,
+		xboxseries,
 		ps4,
+		playstation,
 		psp2,
 		n3ds,
 		wiiu,
+		@switch,
 		vulkan,
+		nomrt,
 		all
 	}
 
@@ -1370,6 +1374,10 @@ namespace AmplifyShaderEditor
 			
 
 			m_currentDataCollector.TesselationActive = m_tessOpHelper.EnableTesselation;
+			#if UNITY_IOS
+			// On iOS custom app data must be used since fixed4 color from appdata_full generates an error on it when tessellation is active
+			m_currentDataCollector.ForceCustomAppDataUsage();
+			#endif
 			m_currentDataCollector.CurrentRenderPath = m_renderPath;
 
 			StandardShaderLightModel cachedLightModel = m_currentLightModel;
@@ -1488,6 +1496,9 @@ namespace AmplifyShaderEditor
 			{
 				sortedPorts.Add( m_inputPorts[ i ].OrderId, m_inputPorts[ i ] );
 			}
+
+			//This must be set before node code generation since it will be used by Outline node
+			m_currentDataCollector.SurfaceCustomShadowCaster = CustomShadowCaster;
 
 			bool normalIsConnected = m_normalPort.IsConnected;
 			m_tessOpHelper.Reset();
@@ -1803,15 +1814,16 @@ namespace AmplifyShaderEditor
 				m_billboardOpHelper.FillDataCollectorWithInternalData( ref m_currentDataCollector );
 			}
 
-
-			if( !m_renderingOptionsOpHelper.UseDefaultShadowCaster && 
-				( ( m_castShadows && ( m_alphaToCoverage || m_inlineAlphaToCoverage.Active ) ) ||
-				( m_castShadows && hasOpacity ) ||
-				( m_castShadows && ( m_currentDataCollector.UsingWorldNormal || m_currentDataCollector.UsingWorldReflection || m_currentDataCollector.UsingViewDirection ) ) ||
-				( m_castShadows && m_inputPorts[ m_discardPortId ].Available && m_inputPorts[ m_discardPortId ].IsConnected && m_currentLightModel == StandardShaderLightModel.CustomLighting ) ))
-				m_customShadowCaster = true;
-			else
-				m_customShadowCaster = false;
+			m_customShadowCaster = CustomShadowCaster;
+			
+			//if( !m_renderingOptionsOpHelper.UseDefaultShadowCaster && 
+			//	( ( m_castShadows && ( m_alphaToCoverage || m_inlineAlphaToCoverage.Active ) ) ||
+			//	( m_castShadows && hasOpacity ) ||
+			//	( m_castShadows && ( m_currentDataCollector.UsingWorldNormal || m_currentDataCollector.UsingWorldReflection || m_currentDataCollector.UsingViewDirection ) ) ||
+			//	( m_castShadows && m_inputPorts[ m_discardPortId ].Available && m_inputPorts[ m_discardPortId ].IsConnected && m_currentLightModel == StandardShaderLightModel.CustomLighting ) ))
+			//	m_customShadowCaster = true;
+			//else
+			//	m_customShadowCaster = false;
 
 			//m_customShadowCaster = true;
 
@@ -1952,7 +1964,8 @@ namespace AmplifyShaderEditor
 					}
 
 					// Build Color Mask
-					m_colorMaskHelper.BuildColorMask( ref ShaderBody, m_customBlendAvailable );
+					bool forceDefault = m_outlineHelper.ActiveColorMask;
+					m_colorMaskHelper.BuildColorMask( ref ShaderBody, m_customBlendAvailable, forceDefault );
 
 					//ShaderBody += "\t\tZWrite " + _zWriteMode + '\n';
 					//ShaderBody += "\t\tZTest " + _zTestMode + '\n';
@@ -2039,6 +2052,7 @@ namespace AmplifyShaderEditor
 						if( m_currentDataCollector.DirtyPragmas/* && !m_customShadowCaster */)
 							ShaderBody += m_currentDataCollector.Pragmas;
 
+						CheckSamplingMacrosFlag();
 						m_currentDataCollector.AddASEMacros();
 						if( m_currentDataCollector.DirtyAdditionalDirectives )
 							ShaderBody += m_currentDataCollector.StandardAdditionalDirectives;
@@ -2187,7 +2201,7 @@ namespace AmplifyShaderEditor
 						//Tesselation
 						if( m_tessOpHelper.EnableTesselation && !usingDebugPort )
 						{
-							ShaderBody += m_tessOpHelper.GetCurrentTessellationFunction + "\n";
+							ShaderBody += m_tessOpHelper.GetCurrentTessellationFunction( ref m_currentDataCollector ) + "\n";
 						}
 
 						//Add Custom Vertex Data
@@ -2254,7 +2268,8 @@ namespace AmplifyShaderEditor
 							ShaderBody += "\t\tinline half4 Lighting" + m_currentLightModel.ToString() + Constants.CustomLightStructStr + "(" + outputStruct + " " + Constants.CustomLightOutputVarStr + ", half3 viewDir, UnityGI gi )\n\t\t{\n";
 							if( hasTranslucency )
 							{
-								ShaderBody += "\t\t\t#if !DIRECTIONAL\n";
+								//ShaderBody += "\t\t\t#if !DIRECTIONAL\n";
+								ShaderBody += "\t\t\t#if !defined(DIRECTIONAL)\n";
 								ShaderBody += "\t\t\tfloat3 lightAtten = gi.light.color;\n";
 								ShaderBody += "\t\t\t#else\n";
 								ShaderBody += "\t\t\tfloat3 lightAtten = lerp( _LightColor0.rgb, gi.light.color, _TransShadow );\n";
@@ -2462,7 +2477,7 @@ namespace AmplifyShaderEditor
 						ShaderBody += "\t\t\t\tUNITY_VERTEX_OUTPUT_STEREO\n";
 						ShaderBody += "\t\t\t};\n";
 
-						ShaderBody += "\t\t\tv2f vert( " + m_currentDataCollector.CustomAppDataName + " v )\n";
+						ShaderBody += "\t\t\tv2f vert( " + m_currentDataCollector.SurfaceVertexStructure + " v )\n";
 						ShaderBody += "\t\t\t{\n";
 						ShaderBody += "\t\t\t\tv2f o;\n";
 
@@ -3314,5 +3329,19 @@ namespace AmplifyShaderEditor
 		public OutlineOpHelper OutlineHelper { get { return m_outlineHelper; } }
 		public float OpacityMaskClipValue { get { return m_opacityMaskClipValue; } }
 		public InlineProperty InlineOpacityMaskClipValue { get { return m_inlineOpacityMaskClipValue; } set { m_inlineOpacityMaskClipValue = value; } }
+		public bool CustomShadowCaster
+		{
+			get
+			{
+				bool hasOpacity = m_inputPorts[ m_opacityPortId ].IsConnected;
+				return 
+					( !m_renderingOptionsOpHelper.UseDefaultShadowCaster &&
+					( ( m_castShadows && ( m_alphaToCoverage || m_inlineAlphaToCoverage.Active ) ) ||
+					( m_castShadows && hasOpacity ) ||
+					( m_castShadows && ( m_currentDataCollector.UsingWorldNormal || m_currentDataCollector.UsingWorldReflection || m_currentDataCollector.UsingViewDirection ) ) ||
+					( m_castShadows && m_inputPorts[ m_discardPortId ].Available && m_inputPorts[ m_discardPortId ].IsConnected && m_currentLightModel == StandardShaderLightModel.CustomLighting ) ) );
+			}
+		}
+		public override AvailableShaderTypes CurrentMasterNodeCategory { get { return AvailableShaderTypes.SurfaceShader; } }
 	}
 }

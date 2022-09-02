@@ -76,6 +76,7 @@ namespace AmplifyShaderEditor
 			m_textLabelWidth = 90;
 			m_useInternalPortData = true;
 			m_autoWrapProperties = true;
+			m_hasLeftDropdown = true;
 			m_tilingPort.Category = MasterNodePortCategory.Vertex;
 			m_offsetPort.Category = MasterNodePortCategory.Vertex;
 			UpdateOutput();
@@ -249,6 +250,22 @@ namespace AmplifyShaderEditor
 		//	//CheckReference();
 		//}
 
+		public override void Draw( DrawInfo drawInfo )
+		{
+			base.Draw( drawInfo );
+
+			if( m_dropdownEditing )
+			{
+				EditorGUI.BeginChangeCheck();
+				m_texcoordSize = EditorGUIIntPopup( m_dropdownRect, m_texcoordSize, Constants.AvailableUVSizesStr, Constants.AvailableUVSizes, UIUtils.PropertyPopUp );
+				if( EditorGUI.EndChangeCheck() )
+				{
+					UpdateOutput();
+					DropdownEditing = false;
+				}
+			}
+		}
+
 		void CheckReference()
 		{
 			if( m_referenceArrayId > -1 )
@@ -338,11 +355,16 @@ namespace AmplifyShaderEditor
 
 			if( dataCollector.IsTemplate )
 			{
-				dataCollector.TemplateDataCollectorInstance.SetUVUsage( m_textureCoordChannel, m_texcoordSize );
+				dataCollector.TemplateDataCollectorInstance.SetUVUsage( m_textureCoordChannel , m_texcoordSize );
 			}
-			else if( m_textureCoordChannel > 3 )
+			else
 			{
-				dataCollector.AddCustomAppData( string.Format( TemplateHelperFunctions.TexUVFullSemantic, m_textureCoordChannel ) );
+				dataCollector.SetTextureChannelSize( m_textureCoordChannel , m_outputPorts[0].DataType );
+
+				if( m_textureCoordChannel > 3 )
+				{
+					dataCollector.AddCustomAppData( string.Format( TemplateHelperFunctions.TexUVFullSemantic , m_textureCoordChannel ) );
+				}
 			}
 			UIUtils.SetCategoryInBitArray( ref m_category, nodeData.Category );
 

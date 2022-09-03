@@ -4,10 +4,11 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: M_Face
-  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 90907a37ec14bed4991b0db24f22b3b2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,6 +41,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DiffuseMap:
+        m_Texture: {fileID: 2800000, guid: 04aca538ef063d047beef63aaa058960, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseRamp:
@@ -79,6 +84,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimLightRamp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -123,6 +132,7 @@ Material:
     - _SpecShininess: 100
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TestMode: 0
     - _TintLayer1_Offset: 0.1
     - _TintLayer2_Offset: 0
     - _TintLayer3_Offset: 0
@@ -146,3 +156,4 @@ Material:
     - _TintLayer3: {r: 0, g: 0, b: 0, a: 0}
     - _TintLowColor: {r: 1, g: 0.14901961, b: 0.14901961, a: 0}
     - _TintMidColor: {r: 0.6901961, g: 0.24705882, b: 0.23921569, a: 0.24705882}
+  m_BuildTextureStacks: []

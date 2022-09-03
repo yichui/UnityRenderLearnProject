@@ -4,10 +4,11 @@
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: 1_Outfit
-  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 90907a37ec14bed4991b0db24f22b3b2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,6 +41,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DiffuseMap:
+        m_Texture: {fileID: 2800000, guid: 04aca538ef063d047beef63aaa058960, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseRamp:
@@ -119,11 +124,16 @@ Material:
     - _SpecLowIntensity: 0
     - _SpecLowShininess: 4
     - _SpecShininess: 100
+    - _SpecSmoothness: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 0.5
+    - _SpecularSkininess: 125.7
+    - _SpecularSmoothness: 20
     - _SrcBlend: 1
+    - _TestMode: 0
     - _TintLayer1_Offset: 0
     - _TintLayer2_Offset: 0
-    - _TintLayer3_Offset: 0
+    - _TintLayer3_Offset: 0.17
     - _TintLayer3_Softnesss: 1
     - _TintLowOffset: 0
     - _TintMidOffset: 0
@@ -137,9 +147,11 @@ Material:
     - _SpecHighColor: {r: 0.30882353, g: 0.30882353, b: 0.30882353, a: 1}
     - _SpecLowColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecularColor: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
     - _TintHighColor: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer1: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer2: {r: 0.72156864, g: 0.6, b: 0.54509807, a: 0.48235294}
-    - _TintLayer3: {r: 1, g: 1, b: 1, a: 0}
+    - _TintLayer3: {r: 1, g: 1, b: 1, a: 0.24705882}
     - _TintLowColor: {r: 1, g: 0.6881339, b: 0.44852942, a: 0}
     - _TintMidColor: {r: 0.7205882, g: 0.60000294, b: 0.5457396, a: 0.484}
+  m_BuildTextureStacks: []

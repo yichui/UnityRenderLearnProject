@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44283357, g: 0.4919905, b: 0.5717586, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311387, g: 0.38073787, b: 0.3587337, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -274,13 +274,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348633594}
-  m_LocalRotation: {x: 0.4825077, y: -0.2475352, z: 0.14430034, w: 0.82770175}
+  m_LocalRotation: {x: 0, y: -0.28652444, z: 0, w: 0.95807296}
   m_LocalPosition: {x: 5.1, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 60.48, y: -33.3, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -33.3, z: 0}
 --- !u!1 &568509095
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,7 +1032,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   x: 0
-  y: 0
+  y: 60
   z: 0
 --- !u!1001 &1825004454
 PrefabInstance:
@@ -1095,7 +1095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: be5ec0e938cba6e41b1aa6280d100918, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.66261995
+      value: 0.4426886
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: be5ec0e938cba6e41b1aa6280d100918, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1103,11 +1103,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: be5ec0e938cba6e41b1aa6280d100918, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7489558
+      value: -0.89667547
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: be5ec0e938cba6e41b1aa6280d100918, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: be5ec0e938cba6e41b1aa6280d100918, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 1_HairPeice
-  m_Shader: {fileID: 4800000, guid: 90907a37ec14bed4991b0db24f22b3b2, type: 3}
+  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -51,6 +51,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EnvMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EnvMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 203bc8e2e5dddd246ad75edd30a2f89e, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -80,19 +88,40 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _EnvIntensity: 1
+    - _EnvMapHDR: 0
+    - _FresnelMax: 1
+    - _FresnelMin: 1
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _OutlinePower: 7
     - _Parallax: 0.02
+    - _Roughness: 0
     - _SmoothnessTextureChannel: 0
+    - _SpecIntensity: 1
+    - _SpecSmoothness: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 1
+    - _SpecularSkininess: 100
+    - _SpecularSmoothness: 0
     - _SrcBlend: 1
+    - _TestMode: 0
+    - _TintLayer1_Offset: 0
+    - _TintLayer2_Offset: 0
+    - _TintLayer3_Offset: 0
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutLineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TintLayer1: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _TintLayer2: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _TintLayer3: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_BuildTextureStacks: []

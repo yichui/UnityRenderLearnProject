@@ -15,7 +15,7 @@ Shader "NPRToon/NMRToon"
 
         _OutlinePower("Outline Power",Range(0,100)) = 7
         _LineColor("Outline Color",Color)=(1,1,1,1)
-         _Factor("Outline Factor", float) = 1
+        _Factor("Outline Factor", float) = 1
 
         _RimLightDir("Rim Light Dir", Vector) = (1,0,-1,0) 
         _RimLightColor("Rim Light Color", Color) = (1,1,1,1) 

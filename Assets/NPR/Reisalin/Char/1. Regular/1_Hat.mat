@@ -59,6 +59,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: d4dd7a568e0c95047bdae76ef4bedb5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EnvMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EnvironmentMap:
         m_Texture: {fileID: 8900000, guid: fa5fbbffa644d654a8699364b6f95778, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -106,6 +110,7 @@ Material:
     - _DiffuseIntensity: 0.5
     - _DstBlend: 0
     - _EnvIntensity: 0.3
+    - _EnvMapHDR: 0
     - _EnvironmentIntensity: 0.5
     - _FresnelMax: 0.6
     - _FresnelMin: 0.3
@@ -117,6 +122,7 @@ Material:
     - _NormalIntensity: 1
     - _OcclusionStrength: 1
     - _Outline: 1
+    - _OutlinePower: 1
     - _OutlineZbias: 0
     - _Parallax: 0.02
     - _RIMLIGHT: 0
@@ -130,7 +136,11 @@ Material:
     - _SpecLowIntensity: 0.5
     - _SpecLowShininess: 4
     - _SpecShininess: 200
+    - _SpecSmoothness: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 0.2
+    - _SpecularSkininess: 200
+    - _SpecularSmoothness: 0
     - _SrcBlend: 1
     - _TestMode: 0
     - _TintLayer1_Offset: 0
@@ -145,11 +155,13 @@ Material:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _DiffuseAttenDir: {r: -1, g: -1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutLineColor: {r: 0.3962264, g: 0.27847987, b: 0.27847987, a: 1}
     - _OutlineColor: {r: 0.39705884, g: 0.39705884, b: 0.39705884, a: 1}
     - _SpecColor: {r: 0.83137256, g: 0.78039217, b: 0.56078434, a: 1}
     - _SpecHighColor: {r: 0.8313726, g: 0.7803922, b: 0.56078434, a: 1}
     - _SpecLowColor: {r: 0.33088237, g: 0.33088237, b: 0.33088237, a: 1}
     - _SpecOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecularColor: {r: 0.7725491, g: 0.6901961, b: 0.48627454, a: 1}
     - _TintHighColor: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer1: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer2: {r: 0.85490197, g: 0.8352941, b: 0.7137255, a: 1}

@@ -1,12 +1,11 @@
-Shader "NPRToon/Toon_Reisalin_standard"
+Shader "NPRToon/Toon_Reisalin_skin"
 {
     Properties
     {
         _BaseMap ("Base Map", 2D) = "white" {}
-        _NormalMap("Normal Map",2D) = "bump"{}
-        _AOMap("AO Map", 2D)= "white" {}
-        _DiffuseMap("Diffuse Map", 2D)= "white" {}
-        _SpecMap("Spec Map", 2D)= "white" {}
+        // _NormalMap("Normal Map",2D) = "bump"{}
+        _DiffuseMap("Ramp Map", 2D)= "white" {}
+       
 
         _TintLayer1("TintLayer1 Color" , Color) = (0.5, 0.5, 0.5, 1)
         _TintLayer1_Offset("TintLayer1 Offset",Range(-1, 1)) = 0
@@ -17,16 +16,16 @@ Shader "NPRToon/Toon_Reisalin_standard"
         _TintLayer3("TintLayer3 Color" , Color) = (0.5, 0.5, 0.5, 0)
         _TintLayer3_Offset("TintLayer3 Offset",Range(-1, 1)) = 0
 
+       
         _SpecularColor("Specular Color 高光颜色" , Color) = (1, 1, 1, 1)
         _SpecularSkininess("Specular Skininess",float) = 100
         _SpecularIntensity("Specular Intensity",Range(0, 100)) = 1
-
 
         _FresnelMin("Fresnel Min",Range(-1, 2)) = 1
         _FresnelMax("Fresnel Max",Range(-1, 2)) = 1
 
         _EnvMap("Env Map", CUBE) = "white"{}
-        _EnvMapHDR ("EnvMap HDR", Range(-1, 1)) = 0
+        _EnvMapHDR ("EnvMap HDR", float) = 1
         _EnvIntensity("EnvIntensity", Range(0, 100)) = 1
         _Roughness ("Roughness", Range(0, 1)) = 0
 
@@ -78,7 +77,8 @@ Shader "NPRToon/Toon_Reisalin_standard"
 
 
             int _TestMode;    
-            sampler2D _BaseMap, _NormalMap, _AOMap, _DiffuseMap, _SpecMap;
+            sampler2D _BaseMap, _AOMap, _DiffuseMap, _SpecMap;
+            //sampler2D _NormalMap;
 
             float _TintLayer1_Offset,_TintLayer2_Offset,_TintLayer3_Offset;
             float4 _TintLayer1, _TintLayer2, _TintLayer3;
@@ -117,17 +117,9 @@ Shader "NPRToon/Toon_Reisalin_standard"
                 float3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
                 //贴图数据
                 half4 baseColor = tex2D(_BaseMap, i.uv);
-                half AO = tex2D(_AOMap, i.uv).r;
-                half4 specMap = tex2D(_SpecMap, i.uv);
-                half specMask = specMap.b;
-                half specSmoothness = specMap.a;
-                //法线贴图
-                half4 normalMap = tex2D(_NormalMap, i.uv);
-                half3 normalData = UnpackNormal(normalMap);
-
-                float3x3 TBN = float3x3(tangentDir, binormalDir, normalDir);
-                normalDir = normalize(mul(normalData,TBN));
-
+                half AO = 1.0;
+             
+          
                 //漫反射
                 half NDotL = dot(normalDir, lightDir);
                 half halfLambert = (NDotL + 1.0) * 0.5;
@@ -156,8 +148,8 @@ Shader "NPRToon/Toon_Reisalin_standard"
                 //高光反射
                 half3 halfDir = normalize(lightDir + viewDir);
                 float NdotH = dot(normalDir, halfDir);
-                half specTerm = max(0.0001, pow(NdotH, _SpecularSkininess * specSmoothness)) * AO;
-                half3 finalSpec = specTerm * _SpecularColor * _SpecularIntensity * specMask;
+                half specTerm = max(0.0001, pow(NdotH, _SpecularSkininess )) * AO;
+                half3 finalSpec = specTerm * _SpecularColor * _SpecularIntensity ;
 
                 
 
@@ -172,7 +164,7 @@ Shader "NPRToon/Toon_Reisalin_standard"
                 half4 colorCubMap = texCUBElod(_EnvMap, float4(reflectDir, mipLevel ));
                 //天空盒颜色可能是HDR的，需要转会普通的颜色
                 half envColor = DecodeHDR(colorCubMap, _EnvMapHDR);
-                half3 finalEnv = envColor * fresnel * _EnvIntensity * specMask;
+                half3 finalEnv = envColor * fresnel * _EnvIntensity * toonDiffuse1;
                 
 
                 half3 finalColor = finalDiffuse + finalSpec + finalEnv;

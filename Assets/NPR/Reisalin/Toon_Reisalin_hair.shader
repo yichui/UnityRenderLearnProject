@@ -1,4 +1,4 @@
-Shader "NPRToon/Toon_Reisalin_standard"
+Shader "NPRToon/Toon_Reisalin_hair"
 {
     Properties
     {

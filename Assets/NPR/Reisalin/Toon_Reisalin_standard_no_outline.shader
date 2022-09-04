@@ -1,4 +1,4 @@
-Shader "NPRToon/Toon_Reisalin_standard"
+Shader "NPRToon/Toon_Reisalin_standard_no_outline"
 {
     Properties
     {
@@ -31,8 +31,6 @@ Shader "NPRToon/Toon_Reisalin_standard"
         _Roughness ("Roughness", Range(0, 1)) = 0
 
 
-        _OutlinePower("Outline Power",Range(0,100)) = 1
-        _OutLineColor("Outline Color",Color)=(1,1,1,1)
 
         //输出各种模式颜色
         [KeywordEnum(None,halfLambert)] _TestMode("TestMode测试模式",Int) = 0
@@ -185,80 +183,6 @@ Shader "NPRToon/Toon_Reisalin_standard"
                 //return finalEnv.xyzz;//finalColor.xyzz;
                 return finalColor.xyzz;
             }
-            ENDCG
-        }
-
-        //描边pass
-        Pass
-        {
-            Tags {"LightMode"="ForwardBase"}
-
-            //开启正向剔除
-            Cull Front
-
-            CGPROGRAM
-        
-            #pragma vertex vert
-            #pragma fragment frag
-
-            #include "UnityCG.cginc"
-
-
-            struct a2v
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-                //float2 texcoord : TEXCOORD1;
-                float3 normal : NORMAL;
-                float4 color :COLOR;
-                //float4 tangent :TANGENT;
-            };
-
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
-             
-                float4 vertColor : TEXCOORD1;
-            };
-
-            sampler2D _BaseMap;
-             // 描边
-            float _OutlinePower;
-            float4 _OutLineColor;
-
-            v2f vert(a2v v) 
-            {
-                v2f o;
-                
-                float3 viewPos = UnityObjectToViewPos(v.vertex);
-                float3 worldNormal =  UnityObjectToWorldNormal(v.normal);
-                float3 outlineDir = normalize( mul((float3x3)UNITY_MATRIX_V, worldNormal));
-                //o.pos = mul(UNITY_MATRIX_P, float4( viewPos,1));
-                viewPos += outlineDir * _OutlinePower * 0.001 * v.color.a;
-                o.pos = mul(UNITY_MATRIX_P, float4( viewPos,1));
-
-                //世界空间下做的顶点外扩
-                /*float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                float3 worldNormal =  UnityObjectToWorldNormal(v.normal);
-                worldPos += worldNormal * _OutlinePower * 0.01;
-                o.pos = mul(UNITY_MATRIX_VP, float4( worldPos,1));*/
-                o.uv = v.uv;//TRANSFORM_TEX(v.uv,_BaseMap);
-                o.vertColor = v.color;
-                return o;
-            }
-
-            fixed4 frag(v2f i) : SV_TARGET
-            {
-                float3 baseColor = tex2D(_BaseMap, i.uv.xy).xyz;
-                half maxComponent = max(max(baseColor.r,baseColor.g),baseColor.b) - 0.004;
-                half3 saturatedColor = step(maxComponent.rrr, baseColor)* baseColor;
-                saturatedColor = lerp(baseColor.rgb, saturatedColor, 0.6);
-                half3 outlineColor = 0.8*saturatedColor *baseColor * _OutLineColor.xyz;
-                return float4(outlineColor, 1.0);
-
-            }
-
             ENDCG
         }
     }

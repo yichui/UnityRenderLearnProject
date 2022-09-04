@@ -59,6 +59,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: d4dd7a568e0c95047bdae76ef4bedb5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EnvMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EnvironmentMap:
         m_Texture: {fileID: 8900000, guid: d192a13d1b5a78642ad26f06fb8f2537, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -101,6 +105,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvIntensity: 1.5
+    - _EnvMapHDR: 1
     - _EnvironmentIntensity: 1
     - _FresnelMax: 1
     - _FresnelMin: 0.4
@@ -112,6 +117,7 @@ Material:
     - _NormalIntensity: 1
     - _OcclusionStrength: 1
     - _Outline: 1.5
+    - _OutlinePower: 1
     - _OutlineZbias: 0
     - _Parallax: 0.02
     - _RimPower: 1
@@ -127,7 +133,7 @@ Material:
     - _SpecSmoothness: 0
     - _SpecularHighlights: 1
     - _SpecularIntensity: 0.5
-    - _SpecularSkininess: 125.7
+    - _SpecularSkininess: 100
     - _SpecularSmoothness: 20
     - _SrcBlend: 1
     - _TestMode: 0
@@ -142,6 +148,7 @@ Material:
     m_Colors:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutLineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.33823532, g: 0.33823532, b: 0.33823532, a: 1}
     - _SpecColor: {r: 0.7058823, g: 0.7058823, b: 0.7058823, a: 1}
     - _SpecHighColor: {r: 0.30882353, g: 0.30882353, b: 0.30882353, a: 1}

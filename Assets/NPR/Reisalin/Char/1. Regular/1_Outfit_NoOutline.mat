@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 1_Outfit_NoOutline
-  m_Shader: {fileID: 4800000, guid: 90907a37ec14bed4991b0db24f22b3b2, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: c49c8b309184a2346b0f2b983a2cd34c, type: 3}
+  m_ShaderKeywords: _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -59,6 +59,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: d4dd7a568e0c95047bdae76ef4bedb5f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EnvMap2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EnvironmentMap:
         m_Texture: {fileID: 8900000, guid: d192a13d1b5a78642ad26f06fb8f2537, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -101,9 +105,10 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvIntensity: 0.5
+    - _EnvMapHDR: 1
     - _EnvironmentIntensity: 1
     - _FresnelMax: 1
-    - _FresnelMin: 0.4
+    - _FresnelMin: 0
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
@@ -112,10 +117,11 @@ Material:
     - _NormalIntensity: 1
     - _OcclusionStrength: 1
     - _Outline: 1
+    - _OutlinePower: 1
     - _OutlineZbias: 2
     - _Parallax: 0.02
     - _RimPower: 1
-    - _Roughness: 0.285
+    - _Roughness: 0
     - _RoughnessAdjust: 0
     - _SmoothnessTextureChannel: 0
     - _SpecHighIntensity: 0
@@ -124,7 +130,11 @@ Material:
     - _SpecLowIntensity: 0
     - _SpecLowShininess: 4
     - _SpecShininess: 100
+    - _SpecSmoothness: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 0.5
+    - _SpecularSkininess: 100
+    - _SpecularSmoothness: 0
     - _SrcBlend: 1
     - _TestMode: 0
     - _TintLayer1_Offset: 0
@@ -137,11 +147,13 @@ Material:
     m_Colors:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutLineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.33823532, g: 0.33823532, b: 0.33823532, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecHighColor: {r: 0.30882353, g: 0.30882353, b: 0.30882353, a: 1}
     - _SpecLowColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _TintHighColor: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer1: {r: 1, g: 1, b: 1, a: 1}
     - _TintLayer2: {r: 0.72156864, g: 0.6, b: 0.54509807, a: 0.48235294}

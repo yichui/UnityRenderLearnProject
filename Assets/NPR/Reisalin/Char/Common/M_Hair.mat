@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Hair
-  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: 0a50ab99b1061f74ca12f96b91c65c2e, type: 3}
+  m_ShaderKeywords: _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -44,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseMap:
-        m_Texture: {fileID: 2800000, guid: 04aca538ef063d047beef63aaa058960, type: 3}
+        m_Texture: {fileID: 2800000, guid: 35b2ac9604cd41c40bce8098763489a1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseRamp:
@@ -101,7 +101,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvIntensity: 0.5
-    - _EnvMapHDR: 0
+    - _EnvMapHDR: 1
     - _EnvRotate: 196
     - _EnvirRotate: 220
     - _EnvironmentIntensity: 0.5
@@ -115,7 +115,7 @@ Material:
     - _NormalIntensity: 1
     - _OcclusionStrength: 1
     - _Outline: 1
-    - _OutlinePower: 7
+    - _OutlinePower: 1
     - _Parallax: 0.02
     - _RimPower: 1
     - _Roughness: 0.3
@@ -130,7 +130,7 @@ Material:
     - _SpecSmoothness: 0
     - _SpecularHighlights: 1
     - _SpecularIntensity: 1
-    - _SpecularSkininess: 100
+    - _SpecularSkininess: 0.1
     - _SpecularSmoothness: 0
     - _SrcBlend: 1
     - _TestMode: 0
@@ -144,7 +144,7 @@ Material:
     m_Colors:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
-    - _OutLineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OutLineColor: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
     - _OutlineColor: {r: 0.375, g: 0.375, b: 0.375, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecHighColor: {r: 0.4705882, g: 0.4705882, b: 0.4705882, a: 1}

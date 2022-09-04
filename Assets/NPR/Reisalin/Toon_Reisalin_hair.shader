@@ -3,8 +3,7 @@ Shader "NPRToon/Toon_Reisalin_hair"
     Properties
     {
         _BaseMap ("Base Map", 2D) = "white" {}
-        _NormalMap("Normal Map",2D) = "bump"{}
-        _AOMap("AO Map", 2D)= "white" {}
+        //_AOMap("AO Map", 2D)= "white" {}
         _DiffuseMap("Diffuse Map", 2D)= "white" {}
         _SpecMap("Spec Map", 2D)= "white" {}
 
@@ -17,8 +16,8 @@ Shader "NPRToon/Toon_Reisalin_hair"
         _TintLayer3("TintLayer3 Color" , Color) = (0.5, 0.5, 0.5, 0)
         _TintLayer3_Offset("TintLayer3 Offset",Range(-1, 1)) = 0
 
-        _SpecularColor("Specular Color 高光颜色" , Color) = (1, 1, 1, 1)
-        _SpecularSkininess("Specular Skininess",float) = 100
+        _SpecularColor("Specular Color 高光颜色" , Color) = (0.5, 0.5, 0.5, 1)
+        _SpecularSkininess("Specular Skininess",Range(0, 1)) = 0.1
         _SpecularIntensity("Specular Intensity",Range(0, 100)) = 1
 
 
@@ -28,8 +27,8 @@ Shader "NPRToon/Toon_Reisalin_hair"
         _EnvMap("Env Map", CUBE) = "white"{}
         _EnvMapHDR ("EnvMap HDR", Range(-1, 1)) = 0
         _EnvIntensity("EnvIntensity", Range(0, 100)) = 1
+        _EnvRotate("_Env Rotate", Range(0, 360)) = 0
         _Roughness ("Roughness", Range(0, 1)) = 0
-
 
         _OutlinePower("Outline Power",Range(0,100)) = 1
         _OutLineColor("Outline Color",Color)=(1,1,1,1)
@@ -40,11 +39,12 @@ Shader "NPRToon/Toon_Reisalin_hair"
     }
     SubShader
     {
-        //Tags { "RenderType"="Opaque" }
-        Tags {"LightMode" = "ForwardBase"}
+        Tags { "Opaque"="Transparent" }
 
         Pass
         {
+            Tags {"LightMode" = "ForwardBase"}
+            Blend SrcAlpha OneMinusSrcAlpha
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -90,7 +90,18 @@ Shader "NPRToon/Toon_Reisalin_hair"
             float _FresnelMin, _FresnelMax;
 
             samplerCUBE _EnvMap;
-            float _EnvMapHDR, _EnvIntensity, _Roughness;
+            float _EnvMapHDR, _EnvIntensity, _Roughness, _EnvRotate;
+
+
+            float3 RotateAround(float degree , float3 target)
+            {
+                float rad = degree * UNITY_PI / 180;
+                float2x2 m_rotate = float2x2(cos(rad), -sin(rad), sin(rad), cos(rad));
+
+                float2 dir_rotate = mul(m_rotate , target.xz);
+                target = float3(dir_rotate.x, target.y, dir_rotate.y);
+                return target;
+            }
 
             v2f vert (appdata v)
             {
@@ -117,10 +128,10 @@ Shader "NPRToon/Toon_Reisalin_hair"
                 float3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
                 //贴图数据
                 half4 baseColor = tex2D(_BaseMap, i.uv);
-                half AO = tex2D(_AOMap, i.uv).r;
+                half AO = 1.0;
                 half4 specMap = tex2D(_SpecMap, i.uv);
-                half specMask = specMap.b;
-                half specSmoothness = specMap.a;
+                half3 specColor = specMap.rgb;
+                half specMask = specMap.a;
                 //法线贴图
                 half4 normalMap = tex2D(_NormalMap, i.uv);
                 half3 normalData = UnpackNormal(normalMap);
@@ -153,37 +164,42 @@ Shader "NPRToon/Toon_Reisalin_hair"
                 finalDiffuse = finalDiffuse * tintColor3;
 
 
-                //高光反射
+                //各向异性高光
+                half NDotV = max(0.0, dot(normalDir,viewDir));
                 half3 halfDir = normalize(lightDir + viewDir);
                 float NdotH = dot(normalDir, halfDir);
-                half specTerm = max(0.0001, pow(NdotH, _SpecularSkininess * specSmoothness)) * AO;
-                half3 finalSpec = specTerm * _SpecularColor * _SpecularIntensity * specMask;
-
-                
+                half TDotH = dot(tangentDir, halfDir);
+                half BDotH = dot(binormalDir, halfDir) / _SpecularSkininess;
+                half specTerm = exp(-(TDotH * TDotH + BDotH * BDotH) / (1.0 + NdotH));
+                float specAtten = saturate(sqrt(max(0.0, halfLambert / NDotV)));
+                half3 finalSpec = specTerm * specAtten * _SpecularColor * _SpecularIntensity * specMask * specColor;
 
 
                 //环境反射、边缘光
                 half fresnel = 1.0 - dot(normalDir, viewDir);
                 fresnel = smoothstep(_FresnelMin, _FresnelMax, fresnel);
                 half3 reflectDir = reflect(-viewDir, normalDir);
+
+                reflectDir = RotateAround(_EnvRotate, reflectDir);
+
                 float rougnness = lerp(0.0, 0.95, saturate(_Roughness));
                 rougnness = rougnness * (1.7 - 0.7 * rougnness);
                 float mipLevel = rougnness * 6.0;
                 half4 colorCubMap = texCUBElod(_EnvMap, float4(reflectDir, mipLevel ));
                 //天空盒颜色可能是HDR的，需要转会普通的颜色
                 half envColor = DecodeHDR(colorCubMap, _EnvMapHDR);
-                half3 finalEnv = envColor * fresnel * _EnvIntensity * specMask;
+                half3 finalEnv = envColor * fresnel * _EnvIntensity * specColor * halfLambert;
                 
 
                 half3 finalColor = finalDiffuse + finalSpec + finalEnv;
-
+                half finalAlpha = max(0.5, i.vertColor.a) ;
                 int mode = 1;
                 if(_TestMode == mode++)
                     return halfLambert;
 
 
                 //return finalEnv.xyzz;//finalColor.xyzz;
-                return finalColor.xyzz;
+                return fixed4(finalColor, finalAlpha);// finalColor.xyzz;
             }
             ENDCG
         }
@@ -192,7 +208,7 @@ Shader "NPRToon/Toon_Reisalin_hair"
         Pass
         {
             Tags {"LightMode"="ForwardBase"}
-
+            Blend SrcAlpha OneMinusSrcAlpha
             //开启正向剔除
             Cull Front
 
@@ -255,7 +271,9 @@ Shader "NPRToon/Toon_Reisalin_hair"
                 half3 saturatedColor = step(maxComponent.rrr, baseColor)* baseColor;
                 saturatedColor = lerp(baseColor.rgb, saturatedColor, 0.6);
                 half3 outlineColor = 0.8*saturatedColor *baseColor * _OutLineColor.xyz;
-                return float4(outlineColor, 1.0);
+
+                half finalAlpha = max(0.5, i.vertColor.a) ;
+                return float4(outlineColor, finalAlpha);
 
             }
 

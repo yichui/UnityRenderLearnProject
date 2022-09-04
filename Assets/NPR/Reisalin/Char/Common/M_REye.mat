@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_REye
-  m_Shader: {fileID: 4800000, guid: 90907a37ec14bed4991b0db24f22b3b2, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: a225ce80c226f144c9fae3240116d7e4, type: 3}
+  m_ShaderKeywords: _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -47,6 +47,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DetalMap:
+        m_Texture: {fileID: 2800000, guid: 16114bbd813a8a44ca6e8fb4697f6b9f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DiffuseMap:
         m_Texture: {fileID: 2800000, guid: 04aca538ef063d047beef63aaa058960, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -57,6 +61,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EnvMap:
         m_Texture: {fileID: 8900000, guid: d4dd7a568e0c95047bdae76ef4bedb5f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EnvMap2:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EnvironmentMap:
@@ -105,6 +113,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvIntensity: 1.5
+    - _EnvMapHDR: 1
     - _EnvRotate: 0
     - _EnvirRotate: 360
     - _EnvironmentIntensity: 1
@@ -118,19 +127,34 @@ Material:
     - _NormalIntensity: 2
     - _OcclusionStrength: 1
     - _Outline: 1
+    - _OutlinePower: 7
     - _Parallax: -0.1
     - _RimPower: 1
     - _Roughness: 0
     - _RoughnessAdjust: 0
     - _SmoothnessTextureChannel: 0
+    - _SpecIntensity: 1
+    - _SpecSmoothness: 0
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 1
+    - _SpecularSkininess: 100
+    - _SpecularSmoothness: 0
     - _SrcBlend: 1
     - _TestMode: 0
+    - _TintLayer1_Offset: 0
+    - _TintLayer2_Offset: 0
+    - _TintLayer3_Offset: 0
     - _UVSec: 0
     - _ZWrite: 1
     - ref_contrast: 1
     m_Colors:
     - _Color: {r: 0.588, g: 0.588, b: 0.588, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _OutLineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TintLayer1: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _TintLayer2: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _TintLayer3: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_BuildTextureStacks: []

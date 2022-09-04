@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.45047736, g: 0.49833506, b: 0.5636635, a: 1}
+  m_IndirectSpecularColor: {r: 0.4504773, g: 0.4983356, b: 0.5636642, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -130,6 +130,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1434034222955158, guid: 24995cf56ac646b40ae4fea4adbc8748, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1572106960015568, guid: 24995cf56ac646b40ae4fea4adbc8748, type: 3}
       propertyPath: m_Name
       value: ReisalinStout
@@ -139,6 +143,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1676625718773496, guid: 24995cf56ac646b40ae4fea4adbc8748, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1734005468508412, guid: 24995cf56ac646b40ae4fea4adbc8748, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -281,7 +289,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -339,13 +347,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1148665241}
-  m_LocalRotation: {x: 0.09845192, y: -0.8442187, z: 0.16624121, w: 0.49996594}
+  m_LocalRotation: {x: 0.09660345, y: -0.8497078, z: 0.16732213, w: 0.49057895}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 22.28, y: -118.73, z: 0}
+  m_LocalEulerAnglesHint: {x: 22.28, y: -120, z: 0}
 --- !u!1 &1149803296
 GameObject:
   m_ObjectHideFlags: 0

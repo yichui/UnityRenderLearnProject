@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_LEye
-  m_Shader: {fileID: 10752, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: a225ce80c226f144c9fae3240116d7e4, type: 3}
+  m_ShaderKeywords: _TESTMODE_NONE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -45,6 +45,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _DetailNormalMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetalMap:
+        m_Texture: {fileID: 2800000, guid: 16114bbd813a8a44ca6e8fb4697f6b9f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseMap:
@@ -125,6 +129,7 @@ Material:
     - _Outline: 1
     - _OutlinePower: 7
     - _Parallax: -0.1
+    - _ParallaxIntensity: -0.1
     - _RimPower: 1
     - _Roughness: 0
     - _RoughnessAdjust: 0
